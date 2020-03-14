@@ -1,0 +1,52 @@
+version: '3.7'
+
+volumes:
+  frontend:
+    driver: local
+  frontend_node_modules:
+    driver: local
+  backend:
+    driver: local
+  backend_node_modules:
+    driver: local
+
+services:
+  angular:
+    build:
+      context: ./frontend
+    environment:
+      - ENV:dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend/node_modules:/frontend/node_modules
+      - ./frontend:/frontend
+    command: "node_modules/.bin/ng serve --host 0.0.0.0"
+
+  express:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/node_modules:/backend/node_modules
+      - ./backend:/backend
+    command: "node_modules/.bin/nodemon app.js"
+    depends_on:
+      - mongo-express
+
+  mongo:
+    image: mongo
+    restart: always
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: admin
+    #   MONGO_INITDB_ROOT_PASSWORD: pass
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    # environment:
+    #   ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+    #   ME_CONFIG_MONGODB_ADMINPASSWORD: pass
