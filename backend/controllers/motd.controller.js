@@ -1,4 +1,6 @@
-var motdModel = require('../models/motd.model.js');
+const motdModel = require('../models/motd.model.js');
+const mongoose = require( 'mongoose' );
+const { validationResult } = require('express-validator');
 
 /**
  * motdController.js
@@ -27,26 +29,37 @@ module.exports = {
      */
     show: function (req, res) {
         var id = req.params.id;
-        motdModel.findOne({_id: id}, function (err, motd) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting motd.',
-                    error: err
-                });
-            }
-            if (!motd) {
-                return res.status(404).json({
-                    message: 'No such motd'
-                });
-            }
-            return res.json(motd);
-        });
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            motdModel.findOne({_id: id}, function (err, motd) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when getting motd.',
+                        error: err
+                    });
+                }
+                if (!motd) {
+                    return res.status(404).json({
+                        message: 'No such motd'
+                    });
+                }
+                return res.json(motd);
+            });
+        } else {
+            return res.status(400).json({
+                message: 'Bad Request: malformed ObjectId'
+            });
+        }
     },
 
     /**
      * motdController.create()
      */
     create: function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(422).json({ errors: errors.array() });
+        }
+
         var motd = new motdModel({
             message : req.body.message,
             foreground : req.body.foreground,
@@ -70,36 +83,48 @@ module.exports = {
      * motdController.update()
      */
     update: function (req, res) {
-        var id = req.params.id;
-        motdModel.findOne({_id: id}, function (err, motd) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting motd',
-                    error: err
-                });
-            }
-            if (!motd) {
-                return res.status(404).json({
-                    message: 'No such motd'
-                });
-            }
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(422).json({ errors: errors.array() });
+        }
 
-            motd.message = req.body.message ? req.body.message : motd.message;
-            motd.foreground = req.body.foreground ? req.body.foreground : motd.foreground;
-            motd.background = req.body.background ? req.body.background : motd.background;
-            motd.timestamp = req.body.timestamp ? req.body.timestamp : motd.timestamp;
-            
-            motd.save(function (err, motd) {
+        var id = req.params.id;
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            motdModel.findOne({_id: id}, function (err, motd) {
                 if (err) {
+                    console.log(err);
                     return res.status(500).json({
-                        message: 'Error when updating motd.',
+                        message: 'Error when getting motd',
                         error: err
                     });
                 }
+                if (!motd) {
+                    return res.status(404).json({
+                        message: 'No such motd'
+                    });
+                }
 
-                return res.json(motd);
+                motd.message = req.body.message ? req.body.message : motd.message;
+                motd.foreground = req.body.foreground ? req.body.foreground : motd.foreground;
+                motd.background = req.body.background ? req.body.background : motd.background;
+                motd.timestamp = req.body.timestamp ? req.body.timestamp : motd.timestamp;
+
+                motd.save(function (err, motd) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when updating motd.',
+                            error: err
+                        });
+                    }
+
+                    return res.json(motd);
+                });
             });
-        });
+        } else {
+            return res.status(400).json({
+                message: 'Bad Request: malformed ObjectId'
+            });
+        }
     },
 
     /**
@@ -107,14 +132,20 @@ module.exports = {
      */
     remove: function (req, res) {
         var id = req.params.id;
-        motdModel.findByIdAndRemove(id, function (err, motd) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the motd.',
-                    error: err
-                });
-            }
-            return res.status(204).json();
-        });
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            motdModel.findByIdAndRemove(id, function (err, motd) {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Error when deleting the motd.',
+                        error: err
+                    });
+                }
+                return res.status(204).json();
+            });
+        } else {
+            return res.status(400).json({
+                message: 'Bad Request: malformed ObjectId'
+            });
+        }
     }
 };

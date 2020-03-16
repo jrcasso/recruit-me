@@ -1,6 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var motdController = require('../controllers/motd.controller.js');
+const express = require('express');
+const router = express.Router();
+const motdController = require('../controllers/motd.controller.js');
+const { check, body, checkSchema } = require('express-validator');
 
 /*
  * GET
@@ -15,12 +16,21 @@ router.get('/:id', motdController.show);
 /*
  * POST
  */
-router.post('/', motdController.create);
+router.post('/', [
+    check('message', 'Message cannot be empty').not().isEmpty(),
+    check('message', 'Message cannot exceed 80 characters').isLength({ max: 80 }),
+  ],
+  motdController.create
+);
 
 /*
  * PUT
  */
-router.put('/:id', motdController.update);
+router.put('/:id', [
+    check('message', 'Message cannot exceed 80 characters').isLength({ max: 80 }),
+  ],
+  motdController.update
+);
 
 /*
  * DELETE
