@@ -13,7 +13,13 @@ const app = express();
 const port = 3000;
 const ip = "0.0.0.0";
 
-mongoose.connect('mongodb://mongo:27017/app', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://mongo:27017/app', {
+  useNewUrlParser: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+  bufferCommands: false,
+});
+
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
