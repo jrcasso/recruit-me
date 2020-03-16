@@ -1,0 +1,37 @@
+button {
+    margin: 0 4px
+}
+
+mat-sidenav {
+    width: 300px;
+}
+
+mat-sidenav-container {
+    position: absolute;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.bottom {
+    position:absolute;
+    bottom:0;
+}
+.center {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.main {
+    display: inline-block;
+    margin: 32px auto;
+}
