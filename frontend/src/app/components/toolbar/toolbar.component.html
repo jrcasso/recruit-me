@@ -1,0 +1,18 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button *ngIf="sidenav" (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>
+    <a mat-button href="https://github.com/jrcasso/recruit-me/" target="_blank" name="github_button" matTooltip="See the underlying code!">
+      <img src="../assets/github-circle-white-transparent.svg">&nbsp;&nbsp;GitHub
+    </a>
+    <a mat-button href="https://www.linkedin.com/in/justin-casso-329871196/" target="_blank" name="linkedin_button" matTooltip="View my professional circles">
+      <img src="../assets/linkedin-3-20.ico">&nbsp;&nbsp;LinkedIn
+    </a>
+  </span>
+  <span class="center hand" routerLink="/">{{title}}</span>
+  <span>
+    <button mat-raised-button color="accent" routerLink="/register" routerLinkActive="active" matTooltip="It's quick and easy!">Create Account</button>
+    <button mat-raised-button color="accent" routerLink="/login" routerLinkActive="active">Login</button>
+  </span>
+</mat-toolbar>

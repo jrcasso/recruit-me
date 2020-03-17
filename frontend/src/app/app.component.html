@@ -1,23 +1,4 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button (click)="sidenav.toggle()">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span class="mat-button-wrapper">
-    <a mat-button href="https://github.com/jrcasso/recruit-me/" matTooltip="See the underlying code!">
-      <img src="../assets/github-circle-white-transparent.svg">&nbsp;GitHub
-    </a>
-    <a mat-button href="https://www.linkedin.com/in/justin-casso-329871196/" matTooltip="View my professional overveiw">
-      <img src="../assets/linkedin-3-20.ico">&nbsp;LinkedIn
-    </a>
-  </span>
-  <span class="center">
-    RecruitMe (v0.1-a)
-  </span>
-  <span>
-    <button mat-raised-button color="accent" routerLink="/register" routerLinkActive="active" matTooltip="It's quick and easy!">Create Account</button>
-    <button mat-raised-button color="accent" routerLink="/login" routerLinkActive="active">Login</button>
-  </span>
-</mat-toolbar>
+<app-toolbar [sidenav]="sidenav" [title]="title"></app-toolbar>
 
 <mat-sidenav-container>
   <mat-sidenav-content class="center">

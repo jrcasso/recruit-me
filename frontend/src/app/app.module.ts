@@ -11,6 +11,7 @@ import { HomeComponent } from '@components/home/home.component';
 import { LoginComponent } from '@components/login/login.component';
 import { RegisterComponent } from '@components/register/register.component';
 import { ResetComponent } from '@components/reset/reset.component';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
 
 
 const routes: Routes = [
@@ -31,6 +32,7 @@ const routes: Routes = [
     LoginComponent,
     RegisterComponent,
     ResetComponent,
+    ToolbarComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
