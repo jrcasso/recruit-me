@@ -11,7 +11,7 @@ var motdModel = require('./models/motd.model.js');
 
 const app = express();
 const port = 3000;
-const ip = "0.0.0.0";
+const host = "0.0.0.0";
 
 mongoose.connect('mongodb://mongo:27017/app', {
   useNewUrlParser: true,
@@ -33,6 +33,6 @@ app.use('/motd', motdRoute)
 app.use('/user', userRoute)
 app.use('/', indexRoute)
 
-app.listen( port, ip, () => {
-    console.log( `server started at http://localhost:${ port }` );
+app.listen( port, host, () => {
+    console.log( `server started at http://${ host }:${ port }` );
 } );
