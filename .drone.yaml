@@ -80,3 +80,29 @@ steps:
     - cd frontend/
     - ./node_modules/protractor/node_modules/webdriver-manager/bin/webdriver-manager update --versions.chrome 2.41
     - ng e2e --webdriver-update=false --protractor-config=e2e/protractor-ci.conf.js
+
+- name: "Build: backend"
+  image: plugins/docker
+  depends_on: ["Unit Tests: backend"]
+  settings:
+    repo: jrcasso/mean-demo-backend
+    dockerfile: backend/Dockerfile
+    tags:
+      - ${DRONE_COMMIT_SHA}
+    password:
+      from_secret: docker_password
+    username:
+      from_secret: docker_username
+
+- name: "Build: frontend"
+  image: plugins/docker
+  depends_on: ["Unit Tests: frontend", "e2e Tests: frontend"]
+  settings:
+    repo: jrcasso/mean-demo-frontend
+    dockerfile: frontend/Dockerfile
+    tags:
+      - ${DRONE_COMMIT_SHA}
+    password:
+      from_secret: docker_password
+    username:
+      from_secret: docker_username
