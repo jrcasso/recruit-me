@@ -45,6 +45,12 @@ steps:
   commands:
     - cd backend && npm install
 
+- name: "Lint: Dockerfiles"
+  image: hadolint/hadolint:latest-alpine
+  depends_on: [ clone ]
+  commands:
+    - hadolint ./frontend/Dockerfile ./backend/Dockerfile
+
 - name: "Lint: TypeScript"
   image: node:latest
   depends_on: ["Install: frontend"]
