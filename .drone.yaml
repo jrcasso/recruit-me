@@ -97,7 +97,6 @@ depends_on:
 steps:
 - name: "Build: backend"
   image: plugins/docker
-  depends_on: ["Unit Tests: backend"]
   settings:
     repo: jrcasso/mean-demo-backend
     dockerfile: backend/Dockerfile
@@ -110,7 +109,6 @@ steps:
 
 - name: "Build: frontend"
   image: plugins/docker
-  depends_on: ["Unit Tests: frontend", "e2e Tests: frontend"]
   settings:
     repo: jrcasso/mean-demo-frontend
     dockerfile: frontend/Dockerfile
