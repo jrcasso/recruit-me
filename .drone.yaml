@@ -96,25 +96,27 @@ depends_on:
 
 steps:
 - name: "Build: backend"
-  image: plugins/docker
-  settings:
-    repo: jrcasso/mean-demo-backend
-    dockerfile: backend/Dockerfile
-    tags:
-      - ${DRONE_COMMIT_SHA}
-    password:
+  image: docker
+  depends_on: ["clone"]
+  environment:
+    DOCKER_PASSWORD:
       from_secret: docker_password
-    username:
+    DOCKER_USERNAME:
       from_secret: docker_username
+    commands:
+      - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.hub.docker.io
+      - docker build -t jrcasso/mean-demo-backend:latest -f backend/Dockerfile .
+      - docker push jrcasso/mean-demo-backend:latest
 
 - name: "Build: frontend"
-  image: plugins/docker
-  settings:
-    repo: jrcasso/mean-demo-frontend
-    dockerfile: frontend/Dockerfile
-    tags:
-      - ${DRONE_COMMIT_SHA}
-    password:
+  image: docker
+  depends_on: ["clone"]
+  environment:
+    DOCKER_PASSWORD:
       from_secret: docker_password
-    username:
+    DOCKER_USERNAME:
       from_secret: docker_username
+    commands:
+      - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.hub.docker.io
+      - docker build -t jrcasso/mean-demo-frontend:latest -f frontend/Dockerfile .
+      - docker push jrcasso/mean-demo-frontend:latest
