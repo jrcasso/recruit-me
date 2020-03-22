@@ -96,27 +96,27 @@ depends_on:
 
 steps:
 - name: "Build: backend"
-  image: docker
+  image: docker:latest
   depends_on: ["clone"]
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
     DOCKER_USERNAME:
       from_secret: docker_username
-    commands:
-      - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.hub.docker.io
-      - docker build -t jrcasso/mean-demo-backend:latest -f backend/Dockerfile .
-      - docker push jrcasso/mean-demo-backend:latest
+  commands:
+    - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.hub.docker.io
+    - docker build -t jrcasso/mean-demo-backend:latest -f backend/Dockerfile .
+    - docker push jrcasso/mean-demo-backend:latest
 
 - name: "Build: frontend"
-  image: docker
+  image: docker:latest
   depends_on: ["clone"]
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
     DOCKER_USERNAME:
       from_secret: docker_username
-    commands:
-      - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.hub.docker.io
-      - docker build -t jrcasso/mean-demo-frontend:latest -f frontend/Dockerfile .
-      - docker push jrcasso/mean-demo-frontend:latest
+  commands:
+    - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.hub.docker.io
+    - docker build -t jrcasso/mean-demo-frontend:latest -f frontend/Dockerfile .
+    - docker push jrcasso/mean-demo-frontend:latest
