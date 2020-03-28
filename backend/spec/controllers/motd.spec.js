@@ -99,9 +99,7 @@ describe('API endpoint for motd', function() {
         .send(motd)
         .expect(201)
         .expect((res) => {
-          expect(res.body.foreground).toBe('#FFFFFF', 'the model default');
-          expect(res.body.background).toBe('#000000', 'the model default');
-          expect(res.body.timestamp / 1000).toBeCloseTo(Date.now() / 1000, 1, 'within a 10 seconds of the model default');
+          expect(Date.now() - res.body.timestamp, 'with now as the current timestamp').toBeLessThan(10000);
           this.ids.push(res.body._id);
         })
         .end(function(err, res) {
