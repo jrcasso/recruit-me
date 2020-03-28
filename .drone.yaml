@@ -80,3 +80,51 @@ steps:
     - cd frontend/
     - ./node_modules/protractor/node_modules/webdriver-manager/bin/webdriver-manager update --versions.chrome 2.41
     - ng e2e --webdriver-update=false --protractor-config=e2e/protractor-ci.conf.js
+
+---
+kind: pipeline
+type: docker
+name: Build
+
+platform:
+  os: linux
+  arch: amd64
+
+depends_on:
+- "Inspection & Testing"
+
+trigger:
+  event:
+    exclude:
+    - pull_request
+
+steps:
+- name: "Build: frontend"
+  image: plugins/docker
+  depends_on: [ clone ]
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: jrcasso/mean-demo-frontend
+    dockerfile: ./frontend/Dockerfile
+    context: ./frontend
+    tags:
+    - "${CI_COMMIT_SHA}"
+    - "${DRONE_BRANCH}"
+
+- name: "Build: backend"
+  image: plugins/docker
+  depends_on: [ clone ]
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: jrcasso/mean-demo-backend
+    dockerfile: ./backend/Dockerfile
+    context: ./backend
+    tags:
+    - "${CI_COMMIT_SHA}"
+    - "${DRONE_BRANCH}"
