@@ -81,6 +81,19 @@ steps:
     - ./node_modules/protractor/node_modules/webdriver-manager/bin/webdriver-manager update --versions.chrome 2.41
     - ng e2e --webdriver-update=false --protractor-config=e2e/protractor-ci.conf.js
 
+---
+kind: pipeline
+type: docker
+name: Build
+
+platform:
+  os: linux
+  arch: amd64
+
+depends_on:
+- "Inspection & Testing"
+
+steps:
 - name: "Build: frontend"
   image: plugins/docker
   depends_on: [ clone ]
