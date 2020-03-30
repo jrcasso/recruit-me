@@ -12,8 +12,7 @@ This project endeavors to implement the following:
 
 
 ## Project Status:
-
-&emsp;&emsp;[![Build Status](https://cloud.drone.io/api/badges/jrcasso/recruit-me/status.svg?ref=refs/heads/develop)](https://cloud.drone.io/jrcasso/recruit-me)
+&emsp;&emsp;[![Build Status](https://cloud.drone.io/api/badges/jrcasso/mean-demo/status.svg?ref=refs/heads/develop)](https://cloud.drone.io/jrcasso/mean-demo)
 &emsp;&emsp;![](https://img.shields.io/github/issues/jrcasso/mean-demo)
 &emsp;&emsp;![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/jrcasso/mean-demo?include_prereleases)
 
@@ -38,8 +37,8 @@ This project endeavors to implement the following:
 ||Testing: e2e|Protractor|Provides Angular-assisted tests against the application running in a real browser, interacting with it as a user would.|
 ||Linting: TypeScript|tslint|Provides basic quality control and a standardization of style|
 ||IaC|Terraform|(WIP) Provides a mature, cloud-provider friendly interface to describe complex infrastructures in code|
-|Continuous Deployment|Pipeline|Drone|(WIP) Provides a self-service delivery platform to implement various parellelizable continuous integration and continuous deployment pipelines|
-||Image Repo|DockerHub|(WIP) Provides an image repository for building containers|
+|Continuous Deployment|Pipeline|Drone|Provides a self-service delivery platform to implement various parellelizable continuous integration and continuous deployment pipelines|
+||Image Repo|DockerHub| Provides an image repository for building containers|
 ||Deploy Agent|Helm|(WIP) Provides an release-managed deployment process for k8s-native applications|
 ||Deploy Target|Kubernetes|(WIP) Provides deployment automation, scaling, and management of containerized applications|
 ||Testing: regress|Protractor|(WIP) Provides Angular-assisted tests against the application running in a real browser, interacting with it as a user would.|
