@@ -7,6 +7,7 @@ describe('API endpoint for motd', function() {
   beforeAll(function() {
     // This host is docker compatible
     this.localRequest = request('http://express:3000')
+    this.apiPath = '/api/v1';
     this.helper = new MotdHelper();
   });
 
@@ -35,7 +36,7 @@ describe('API endpoint for motd', function() {
   describe('with GET /motd/:id', function() {
     it('returns 400 for invalid ObjectIds', function(done) {
       this.localRequest
-        .get('/motd/99999')
+        .get(`${this.apiPath}/motd/99999`)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(400, done)
@@ -46,7 +47,7 @@ describe('API endpoint for motd', function() {
       let motd = await this.helper.create(this.motd);
 
       this.localRequest
-        .get(`/motd/${motd._id}`)
+        .get(`${this.apiPath}/motd/${motd._id}`)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, done)
@@ -63,7 +64,7 @@ describe('API endpoint for motd', function() {
         this.ids.push(motd._id);
       }
       this.localRequest
-        .get('/motd/')
+        .get(`${this.apiPath}/motd/`)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect((res) => {
@@ -76,7 +77,7 @@ describe('API endpoint for motd', function() {
   describe('with POST /motd/', function() {
     it('creates a valid message of the day', function(done) {
       this.localRequest
-        .post('/motd')
+        .post(`${this.apiPath}/motd`)
         .send(this.motd)
         .expect(201)
         .expect((res) => {
@@ -95,7 +96,7 @@ describe('API endpoint for motd', function() {
     it('creates a default message of the day', function(done) {
       motd = { message: 'test-default-message' };
       this.localRequest
-        .post('/motd')
+        .post(`${this.apiPath}/motd`)
         .send(motd)
         .expect(201)
         .expect((res) => {
@@ -112,7 +113,7 @@ describe('API endpoint for motd', function() {
       // Missing required field "message":
       motd = { foreground : this.foreground, background : this.background, timestamp : this.timestamp }
       this.localRequest
-        .post('/motd')
+        .post(`${this.apiPath}/motd`)
         .send(motd)
         .expect(422, { errors: [{
           msg: 'Message cannot be empty',
@@ -125,7 +126,7 @@ describe('API endpoint for motd', function() {
       motd = this.motd;
       motd.message = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzOOO'
       this.localRequest
-        .post('/motd')
+        .post(`${this.apiPath}/motd`)
         .send(motd)
         .expect(422, { errors: [{
           value: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzOOO',
@@ -139,7 +140,7 @@ describe('API endpoint for motd', function() {
       motd = this.motd;
       motd.message = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzOO'
       this.localRequest
-        .post('/motd')
+        .post(`${this.apiPath}/motd`)
         .send(motd)
         .expect((res) => this.ids.push(res.body._id))
         .expect(201, done)
@@ -149,7 +150,7 @@ describe('API endpoint for motd', function() {
   describe('with UPDATE /motd/:id', function() {
     it('returns 400 for invalid ObjectIds', function(done) {
       this.localRequest
-        .put('/motd/99999')
+        .put(`${this.apiPath}/motd/99999`)
         .send(this.motd)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -164,7 +165,7 @@ describe('API endpoint for motd', function() {
       // Update the motd and expect a new message
       newMotd = { message: 'test-new-message' };
       this.localRequest
-        .put(`/motd/${motd._id}`)
+        .put(`${this.apiPath}/motd/${motd._id}`)
         .send(newMotd)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -180,7 +181,7 @@ describe('API endpoint for motd', function() {
   describe('with DELETE /motd/:id', function() {
     it('returns 400 for invalid ObjectIds', function(done) {
       this.localRequest
-        .delete('/motd/99999')
+        .delete(`${this.apiPath}/motd/99999`)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(400, done)
@@ -193,7 +194,7 @@ describe('API endpoint for motd', function() {
       // Delete the motd and expect a new message
       newMotd = { message: 'test-new-message' };
       this.localRequest
-        .delete(`/motd/${motd._id}`)
+        .delete(`${this.apiPath}/motd/${motd._id}`)
         .set('Accept', 'application/json')
         .expect(204, done)
 

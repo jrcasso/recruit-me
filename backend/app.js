@@ -17,11 +17,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 
 const mongoose = require( 'mongoose' );
-const indexRoute = require('./routes/index.route.js');
-const userRoute = require('./routes/user.route.js');
-const motdRoute = require('./routes/motd.route.js');
-
-var motdModel = require('./models/motd.model.js');
+const apiRoute = require('./routes/api.route.js');
 
 const app = express();
 const port = 3000;
@@ -43,9 +39,7 @@ db.once('open', function() {
 app.use(cors())
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use('/motd', motdRoute)
-app.use('/user', userRoute)
-app.use('/', indexRoute)
+app.use('/api/v1', apiRoute)
 
 app.listen( port, host, () => {
     console.log( `server started at http://${ host }:${ port }` );
