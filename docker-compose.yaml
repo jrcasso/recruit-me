@@ -33,7 +33,7 @@ services:
     volumes:
       - ./backend/node_modules:/backend/node_modules
       - ./backend:/backend
-    command: "node_modules/.bin/nodemon app.js"
+    command: "node_modules/.bin/nodemon -L app.js"
     depends_on:
       - mongo-express
       - mongo
