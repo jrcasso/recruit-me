@@ -1,3 +1,7 @@
+mat-card {
+  padding: 50px;
+}
+
 .welcome-header-image {
   background-image: url('https://avatars3.githubusercontent.com/u/22212703?s=460&u=dc2b593bc27603bceeac677d1e2fdcaac892a7a5&v=4');
   background-size: cover;
@@ -10,6 +14,7 @@
 }
 
 .welcome-wrapper {
+  padding: 24px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(5, 1fr);
@@ -17,14 +22,15 @@
   grid-row-gap: 0px;
 }
 
-.welcome-content {
-  text-align: center;
-  grid-area: 2 / 1 / 6 / 5;
-}
-
 .welcome-top {
   text-align: center;
   grid-area: 1 / 1 / 2 / 5;
+}
+
+.welcome-content {
+  text-align: left;
+  grid-area: 2 / 1 / 6 / 5;
+  width: 760px;
 }
 
 .welcome-center {

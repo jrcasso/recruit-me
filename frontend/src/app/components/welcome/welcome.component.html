@@ -2,27 +2,63 @@
   <mat-card-header>
     <div mat-card-avatar class="welcome-header-image"></div>
     <mat-card-title>Justin Casso</mat-card-title>
-    <mat-card-subtitle>Welcome!</mat-card-subtitle>
+    <mat-card-subtitle>Software Engineer</mat-card-subtitle>
   </mat-card-header>
   <!-- <img mat-card-image src="../../../assets/headshot.jpg" alt="Photo of Justin Casso"> -->
-  <mat-card-content class="welcome-wrapper">
-    <mat-divider></mat-divider>
-    <div class="welcome-top">
-      <h2>Reaching out to great candidates can be difficult, so I made it easy!</h2>
-      Through my portal, you'll be able to contact me as well as learn about what I can bring to your organization.<br><br>
-      <mat-divider></mat-divider>
-    </div>
-    <div class="welcome-content">
-      <mat-tab-group>
-        <mat-tab label="Introduction"> Content 1 </mat-tab>
-        <mat-tab label="Specialites"> Specialites </mat-tab>
-        <mat-tab label="Interests"> Interests </mat-tab>
-        <mat-tab label="Contact"> Contact Information </mat-tab>
-      </mat-tab-group>
-    </div>
-  </mat-card-content>
+  <mat-tab-group dynamicHeight=true mat-align-tabs="center">
+    <mat-tab label="Welcome">
+      <mat-card-content class="welcome-wrapper">
+        <div class="welcome-top"><br>
+          <p class="mat-headline">Finding great candidates can be difficult, so let's make it easy!</p>
+        </div>
+        <div class="welcome-content">
+          <p class="mat-body-1">
+            Welcome to my personal recruitment app!
+            Through this portal, you'll find some basic telephone questions that I've already answered for your convenience.
+            Additionally, you'll be able to interact with me in ways that will greatly simplify your recruitment inquiry.
+            <br><br>
+            As you learn about the skillset I can bring to your organization, please feel free to submit any and all questions.
+            I'll be notified and you can expect a personalized response as soon as possible.
+            <br><br>
+            Finally, as an open-source project, this demonstrative application doubles as an artifact of the techniques I utilize
+            in my engineering practices &mdash; the implementation of which is completely and intentionally transparent for your scruitiny.
+            I'm confident you'll find that both the design patterns I employ and the development routines I practice are of the caliber expected from an excellent candidate.
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-tab>
+    <mat-tab label="Who are you?">
+      <mat-card-content class="welcome-wrapper">
+        <div class="welcome-top"><br>
+          <p class="mat-headline">...and what kind of engineer would be an ideal fit?</p>
+        </div>
+        <div class="welcome-content">
+          <p class="mat-body-1">
+            With a focus on creating software that delivers excellent customer value, you need an engineer that can not only design complex products, but can also keep broader goals in perspective while doing so.
+            <br><br>
+            Beyond technical capabilities as a fundamental requirement, the cultural fit of a candidate is often an equally signficant predictor of future success.
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-tab>
+    <mat-tab label="Who am I?">
+      <mat-card-content class="welcome-wrapper">
+        <div class="welcome-top"><br>
+          <p class="mat-headline">I'm the engineer you've been looking for</p>
+        </div>
+        <div class="welcome-content">
+          <p class="mat-body-1">
+            As you learn about the skillset I can bring to your organization, please feel free to submit any and all questions.
+            I'll be notified and you can expect a response as soon as possible.
+            <br><br>
+            Finally, as an open-source project, this application doubles as a fully-functional artifact of the techniques I utilize in my engineering practices.
+            I'm confident you'll find that both the design patterns I employ and the development routines I practice are of the caliber expected from an excellent candidate.
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-tab>
+  </mat-tab-group>
   <mat-card-actions class="welcome-center">
-    <button mat-button><mat-icon>favorite</mat-icon>&nbsp;LIKE</button>
-    <button mat-button><mat-icon>share</mat-icon>&nbsp;SHARE</button>
+    <button mat-raised-button color="accent">FAQ&nbsp;&nbsp;<mat-icon>live_help</mat-icon></button>
   </mat-card-actions>
 </mat-card>
