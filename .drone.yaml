@@ -45,6 +45,12 @@ steps:
   commands:
     - cd backend && npm install
 
+- name: "Lint: Shell files"
+  image: koalaman/shellcheck-alpine:latest
+  depends_on: [ clone ]
+  commands:
+    - /bin/shellcheck ./*.sh
+
 - name: "Lint: Dockerfiles"
   image: hadolint/hadolint:latest-alpine
   depends_on: [ clone ]

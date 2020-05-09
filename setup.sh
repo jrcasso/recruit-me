@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2086
 
 #########################################################
 # Function declarations:
@@ -24,6 +25,7 @@ check_command() {
 
 check_exit_code() {
     # success_message failure_message
+    # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
         success_notice "$1"
     else
