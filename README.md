@@ -43,3 +43,26 @@ This project endeavors to implement the following:
 ||Deploy Target|Kubernetes|(WIP) Provides deployment automation, scaling, and management of containerized applications|
 ||Testing: regress|Protractor|(WIP) Provides Angular-assisted tests against the application running in a real browser, interacting with it as a user would.|
 |Continuous Monitoring|TBD|TBD|(WIP)
+
+# Development Setup
+
+Ensure you have the following prerequisites satisfied:
+ - Install Docker for Desktop
+ - Install npm
+
+```sh
+git clone git@github.com:jrcasso/mean-demo
+cd mean-demo/
+./setup.sh
+ docker-compose run --service-ports <service> bash # or docker-compose up, shelling into container as needed
+```
+
+For angular, you would then execute:
+```sh
+./node_modules/.bin/ng serve --host 0.0.0.0
+```
+
+For express, you would then execute:
+```sh
+./node_modules/.bin/nodemon app.js
+```
