@@ -6,7 +6,7 @@ const MotdHelper = require('../helpers/motd.helper');
 describe('API endpoint for motd', function() {
   beforeAll(function() {
     // This host is docker compatible
-    this.localRequest = request('http://express:3000')
+    this.localRequest = request('http://express:80')
     this.apiPath = '/api/v1';
     this.helper = new MotdHelper();
   });

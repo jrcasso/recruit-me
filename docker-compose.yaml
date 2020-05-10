@@ -29,7 +29,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "3000:3000"
+      - "80:80"
     volumes:
       - ./backend/node_modules:/backend/node_modules
       - ./backend:/backend
