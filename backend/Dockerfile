@@ -6,6 +6,6 @@ WORKDIR /backend
 
 RUN ["npm", "install"]
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["/backend/node_modules/.bin/nodemon", "/backend/app.js"]

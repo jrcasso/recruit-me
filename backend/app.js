@@ -20,7 +20,7 @@ const mongoose = require( 'mongoose' );
 const apiRoute = require('./routes/api.route.js');
 
 const app = express();
-const port = 3000;
+const port = 80;
 const host = "0.0.0.0";
 
 mongoose.connect('mongodb://mongo:27017/app', {
