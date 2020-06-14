@@ -1,0 +1,1 @@
+../common/entrypoint.tf

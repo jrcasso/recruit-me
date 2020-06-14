@@ -1,0 +1,4 @@
+bucket       = "terraform-remote-primary"
+key          = "stage/terraform.tfstate"
+region       = "us-east-1"
+organization = "primary"
