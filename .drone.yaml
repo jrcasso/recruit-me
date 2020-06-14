@@ -7,10 +7,9 @@
 #  - Security vulnerability scanners
 #  - AST optimization checks? (if possible)
 # TODO: Build pipeline
-# TODO: IaC pipeline
-# TODO: Deploy pipeline
+# TODO: Deploy pipeline (partially)
 # TODO: Regression pipeline
-# TODO: Manual promotion pipelines
+# TODO: Manual promotion pipelines (continuous process; iterative)
 
 kind: pipeline
 type: docker
@@ -90,7 +89,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: Build
+name: Building & Planning
 
 platform:
   os: linux
@@ -99,15 +98,60 @@ platform:
 depends_on:
 - "Inspection & Testing"
 
-trigger:
-  event:
-    exclude:
-    - pull_request
-
 steps:
+- name: "Plan - Stage"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  environment:
+    AWS_DEFAULT_REGION:
+      from_secret: AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+  when:
+    branch:
+      exclude:
+      - master
+    event:
+      exclude:
+      - pull_request
+  commands:
+  - cd terraform/stage
+  - terraform init -backend-config=backend-config
+  - terraform validate
+  - terraform plan
+
+- name: "Plan - Production"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  environment:
+    AWS_DEFAULT_REGION:
+      from_secret: AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+  when:
+    branch:
+    - master
+    - rc*
+    event:
+      exclude:
+      - pull_request
+  commands:
+  - cd terraform/production
+  - terraform init -backend-config=backend-config
+  - terraform validate
+  - terraform plan
+
 - name: "Build: frontend"
   image: plugins/docker
   depends_on: [ clone ]
+  when:
+    event:
+      exclude:
+      - pull_request
   settings:
     username:
       from_secret: docker_username
@@ -123,6 +167,10 @@ steps:
 - name: "Build: backend"
   image: plugins/docker
   depends_on: [ clone ]
+  when:
+    event:
+      exclude:
+      - pull_request
   settings:
     username:
       from_secret: docker_username
@@ -134,3 +182,60 @@ steps:
     tags:
     - "${CI_COMMIT_SHA}"
     - "${DRONE_BRANCH}"
+
+---
+kind: pipeline
+type: docker
+name: Deploy
+
+platform:
+  os: linux
+  arch: amd64
+
+depends_on:
+- "Building & Planning"
+
+trigger:
+  branch:
+  - master
+  - develop
+  event:
+  - push
+
+steps:
+- name: "Apply - Stage"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  environment:
+    AWS_DEFAULT_REGION:
+      from_secret: AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+  when:
+    branch:
+    - develop
+  commands:
+  - cd terraform/stage
+  - terraform init -backend-config=backend-config
+  - terraform apply
+
+- name: "Apply - Production"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  environment:
+    AWS_DEFAULT_REGION:
+      from_secret: AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+  when:
+    branch:
+    - master
+  commands:
+  - cd terraform/production
+  - terraform init -backend-config=backend-config
+  - terraform apply
+
