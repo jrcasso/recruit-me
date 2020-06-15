@@ -61,7 +61,7 @@ resource "aws_network_acl" "app" {
 
 resource "aws_instance" "app" {
   ami                         = var.ami_id
-  instance_type               = "t2.micro"
+  instance_type               = "t3a.medium"
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.app.id
   key_name                    = "personal-key"
