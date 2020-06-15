@@ -69,7 +69,9 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [
     aws_default_security_group.default.id,
     aws_security_group.allow_ssh.id,
-    aws_security_group.allow_tls.id
+    aws_security_group.allow_tls.id,
+    aws_security_group.allow_k8s_worker_node.id,
+    aws_security_group.allow_k8s_control_plane_node.id
   ]
 
   root_block_device {

@@ -138,3 +138,97 @@ resource "aws_security_group" "allow_ssh" {
     Owner       = "jrcasso"
   }
 }
+
+resource "aws_security_group" "allow_k8s_control_plane_node" {
+  name        = "allow_k8s_control_plane_node"
+  description = "Kubernetes control plane node"
+  vpc_id      = aws_vpc.primary.id
+
+  ingress {
+    description = "Kubernetes API server"
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "etcd server client API"
+    from_port   = 2379
+    to_port     = 2380
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Kubelet API"
+    from_port   = 10250
+    to_port     = 10250
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "kube-scheduler"
+    from_port   = 10251
+    to_port     = 10251
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "kube-controller-manager"
+    from_port   = 10252
+    to_port     = 10252
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Project     = "primary"
+    Environment = var.environment
+    Owner       = "jrcasso"
+  }
+}
+
+resource "aws_security_group" "allow_k8s_worker_node" {
+  name        = "allow_k8s_worker_node"
+  description = "Kubernetes worker node"
+  vpc_id      = aws_vpc.primary.id
+
+  ingress {
+    description = "Kubelet API"
+    from_port   = 10250
+    to_port     = 10250
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # [aws_vpc.primary.cidr_block]
+  }
+
+  ingress {
+    description = "NodePort Services"
+    from_port   = 30000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # [aws_vpc.primary.cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Project     = "primary"
+    Environment = var.environment
+    Owner       = "jrcasso"
+  }
+}
