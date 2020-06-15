@@ -50,6 +50,12 @@ steps:
   commands:
     - /bin/shellcheck ./*.sh
 
+- name: "Lint - Terraform"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  commands:
+  - terraform fmt -check -diff -recursive terraform
+
 - name: "Lint: Dockerfiles"
   image: hadolint/hadolint:latest-alpine
   depends_on: [ clone ]
