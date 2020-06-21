@@ -19,6 +19,12 @@ platform:
   os: linux
   arch: amd64
 
+trigger:
+  event:
+    - pull_request
+    - push
+    - tag
+
 services:
 - name: mongo
   image: mongo:latest
@@ -101,8 +107,15 @@ platform:
   os: linux
   arch: amd64
 
+trigger:
+  event:
+    - pull_request
+    - push
+    - tag
+
 depends_on:
 - "Inspection & Testing"
+
 
 steps:
 - name: "Plan - Stage"
@@ -198,15 +211,16 @@ platform:
   os: linux
   arch: amd64
 
-depends_on:
-- "Building & Planning"
-
 trigger:
   branch:
   - master
   - develop
   event:
   - push
+
+depends_on:
+- "Building & Planning"
+
 
 steps:
 - name: "Apply - Stage"
@@ -225,7 +239,7 @@ steps:
   commands:
   - cd terraform/stage
   - terraform init -backend-config=backend-config
-  - terraform apply
+  - terraform apply -auto-approve
 
 - name: "Apply - Production"
   image: hashicorp/terraform:0.12.26
@@ -243,5 +257,63 @@ steps:
   commands:
   - cd terraform/production
   - terraform init -backend-config=backend-config
-  - terraform apply
+  - terraform apply -auto-approve
+
+
+---
+kind: pipeline
+type: docker
+name: Infrastructure
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+  - promote
+  target:
+  - destroy-stage
+  - apply-stage
+
+
+steps:
+- name: "Manual Destroy - Stage"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  environment:
+    AWS_DEFAULT_REGION:
+      from_secret: AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+  commands:
+  - cd terraform/stage
+  - terraform init -backend-config=backend-config
+  - terraform destroy -auto-approve
+  when:
+    target:
+    - destroy-stage
+
+- name: "Manual Apply - Stage"
+  image: hashicorp/terraform:0.12.26
+  depends_on: [ clone ]
+  environment:
+    AWS_DEFAULT_REGION:
+      from_secret: AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+  when:
+    target:
+    - apply-stage
+  commands:
+  - cd terraform/stage
+  - terraform init -backend-config=backend-config
+  - terraform apply -auto-approve
+  when:
+    target:
+    - apply-stage
 
