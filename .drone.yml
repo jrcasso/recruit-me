@@ -1,3 +1,4 @@
+---
 # Shared node_modules between subsequent tests imposes
 # DAG dependencies that are not conducive for multiple
 # parallel pipelines; a refined solution must be found.
@@ -317,3 +318,9 @@ steps:
     target:
     - apply-stage
 
+
+---
+kind: signature
+hmac: ce8e85761aab4caa14b309d7fd708f40247615ea6f3f16100d383db0eb08a131
+
+...
