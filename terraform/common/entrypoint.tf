@@ -77,13 +77,13 @@ resource "aws_default_security_group" "default" {
   }
 }
 
-resource "aws_security_group" "allow_tls" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
+resource "aws_security_group" "allow_http_https" {
+  name        = "allow_http_https"
+  description = "Allow inbound HTTP(S) traffic"
   vpc_id      = aws_vpc.primary.id
 
   ingress {
-    description = "TLS from VPC"
+    description = "Secure HTTP traffic to VPC"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -91,7 +91,7 @@ resource "aws_security_group" "allow_tls" {
   }
 
   ingress {
-    description = "TLS from VPC"
+    description = "Unsecured HTTP traffic to VPC"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -99,6 +99,7 @@ resource "aws_security_group" "allow_tls" {
   }
 
   egress {
+    description = "Allow all "
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -114,11 +115,11 @@ resource "aws_security_group" "allow_tls" {
 
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
+  description = "Allow inbound SSH traffic"
   vpc_id      = aws_vpc.primary.id
 
   ingress {
-    description = "SSH from VPC"
+    description = "SSH to VPC"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"

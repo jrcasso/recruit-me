@@ -35,12 +35,10 @@ resource "aws_network_acl" "app" {
   vpc_id = aws_vpc.primary.id
 
   egress {
-    protocol   = "tcp"
-    rule_no    = 200
-    action     = "allow"
-    cidr_block = aws_subnet.app.cidr_block
-    from_port  = 443
-    to_port    = 443
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -48,8 +46,8 @@ resource "aws_network_acl" "app" {
     rule_no    = 100
     action     = "allow"
     cidr_block = aws_subnet.app.cidr_block
-    from_port  = 80
-    to_port    = 80
+    from_port  = 0
+    to_port    = 0
   }
 
   tags = {
@@ -67,11 +65,7 @@ resource "aws_instance" "app" {
   key_name                    = "personal-key"
   depends_on                  = [aws_internet_gateway.primary]
   vpc_security_group_ids = [
-    aws_default_security_group.default.id,
-    aws_security_group.allow_ssh.id,
-    aws_security_group.allow_tls.id,
-    aws_security_group.allow_k8s_worker_node.id,
-    aws_security_group.allow_k8s_control_plane_node.id
+    aws_default_security_group.default.id
   ]
 
   root_block_device {
