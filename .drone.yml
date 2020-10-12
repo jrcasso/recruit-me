@@ -31,14 +31,6 @@ services:
   image: mongo:latest
 
 steps:
-- name: express
-  image: node:latest
-  detach: true
-  depends_on: ["Install: backend"]
-  commands:
-    - cd backend/
-    - node_modules/.bin/nodemon backend/app.js
-
 - name: "Install: frontend"
   image: node:latest
   depends_on: ["clone"]
@@ -51,6 +43,14 @@ steps:
   commands:
     - cd backend && npm install
 
+- name: express
+  image: node:latest
+  detach: true
+  depends_on: ["Install: backend"]
+  commands:
+    - cd backend/
+    - node_modules/.bin/nodemon backend/app.js
+  
 - name: "Lint: Shell files"
   image: koalaman/shellcheck-alpine:latest
   depends_on: [ clone ]
