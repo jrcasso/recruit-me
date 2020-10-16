@@ -31,14 +31,6 @@ services:
   image: mongo:latest
 
 steps:
-- name: express
-  image: node:latest
-  detach: true
-  depends_on: ["Install: backend"]
-  commands:
-    - cd backend/
-    - node_modules/.bin/nodemon backend/app.js
-
 - name: "Install: frontend"
   image: node:latest
   depends_on: ["clone"]
@@ -51,6 +43,14 @@ steps:
   commands:
     - cd backend && npm install
 
+- name: express
+  image: node:latest
+  detach: true
+  depends_on: ["Install: backend"]
+  commands:
+    - cd backend/
+    - node_modules/.bin/nodemon backend/app.js
+  
 - name: "Lint: Shell files"
   image: koalaman/shellcheck-alpine:latest
   depends_on: [ clone ]
@@ -119,51 +119,51 @@ depends_on:
 
 
 steps:
-- name: "Plan - Stage"
-  image: hashicorp/terraform:0.12.26
-  depends_on: [ clone ]
-  environment:
-    AWS_DEFAULT_REGION:
-      from_secret: AWS_DEFAULT_REGION
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-  when:
-    branch:
-      exclude:
-      - master
-    event:
-      exclude:
-      - pull_request
-  commands:
-  - cd terraform/stage
-  - terraform init -backend-config=backend-config
-  - terraform validate
-  - terraform plan
+# - name: "Plan - Stage"
+#   image: hashicorp/terraform:0.12.26
+#   depends_on: [ clone ]
+#   environment:
+#     AWS_DEFAULT_REGION:
+#       from_secret: AWS_DEFAULT_REGION
+#     AWS_SECRET_ACCESS_KEY:
+#       from_secret: AWS_SECRET_ACCESS_KEY
+#     AWS_ACCESS_KEY_ID:
+#       from_secret: AWS_ACCESS_KEY_ID
+#   when:
+#     branch:
+#       exclude:
+#       - master
+#     event:
+#       exclude:
+#       - pull_request
+#   commands:
+#   - cd terraform/stage
+#   - terraform init -backend-config=backend-config
+#   - terraform validate
+#   - terraform plan
 
-- name: "Plan - Production"
-  image: hashicorp/terraform:0.12.26
-  depends_on: [ clone ]
-  environment:
-    AWS_DEFAULT_REGION:
-      from_secret: AWS_DEFAULT_REGION
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-  when:
-    branch:
-    - master
-    - rc*
-    event:
-      exclude:
-      - pull_request
-  commands:
-  - cd terraform/production
-  - terraform init -backend-config=backend-config
-  - terraform validate
-  - terraform plan
+# - name: "Plan - Production"
+#   image: hashicorp/terraform:0.12.26
+#   depends_on: [ clone ]
+#   environment:
+#     AWS_DEFAULT_REGION:
+#       from_secret: AWS_DEFAULT_REGION
+#     AWS_SECRET_ACCESS_KEY:
+#       from_secret: AWS_SECRET_ACCESS_KEY
+#     AWS_ACCESS_KEY_ID:
+#       from_secret: AWS_ACCESS_KEY_ID
+#   when:
+#     branch:
+#     - master
+#     - rc*
+#     event:
+#       exclude:
+#       - pull_request
+#   commands:
+#   - cd terraform/production
+#   - terraform init -backend-config=backend-config
+#   - terraform validate
+#   - terraform plan
 
 - name: "Build: frontend"
   image: plugins/docker
@@ -203,124 +203,124 @@ steps:
     - "${CI_COMMIT_SHA}"
     - "${DRONE_BRANCH}"
 
----
-kind: pipeline
-type: docker
-name: Deploy
+# ---
+# kind: pipeline
+# type: docker
+# name: Deploy
 
-platform:
-  os: linux
-  arch: amd64
+# platform:
+#   os: linux
+#   arch: amd64
 
-trigger:
-  branch:
-  - master
-  - develop
-  event:
-  - push
+# trigger:
+#   branch:
+#   - master
+#   - develop
+#   event:
+#   - push
 
-depends_on:
-- "Building & Planning"
-
-
-steps:
-- name: "Apply - Stage"
-  image: hashicorp/terraform:0.12.26
-  depends_on: [ clone ]
-  environment:
-    AWS_DEFAULT_REGION:
-      from_secret: AWS_DEFAULT_REGION
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-  when:
-    branch:
-    - develop
-  commands:
-  - cd terraform/stage
-  - terraform init -backend-config=backend-config
-  - terraform apply -auto-approve
-
-- name: "Apply - Production"
-  image: hashicorp/terraform:0.12.26
-  depends_on: [ clone ]
-  environment:
-    AWS_DEFAULT_REGION:
-      from_secret: AWS_DEFAULT_REGION
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-  when:
-    branch:
-    - master
-  commands:
-  - cd terraform/production
-  - terraform init -backend-config=backend-config
-  - terraform apply -auto-approve
+# depends_on:
+# - "Building & Planning"
 
 
----
-kind: pipeline
-type: docker
-name: Infrastructure
+# steps:
+# - name: "Apply - Stage"
+#   image: hashicorp/terraform:0.12.26
+#   depends_on: [ clone ]
+#   environment:
+#     AWS_DEFAULT_REGION:
+#       from_secret: AWS_DEFAULT_REGION
+#     AWS_SECRET_ACCESS_KEY:
+#       from_secret: AWS_SECRET_ACCESS_KEY
+#     AWS_ACCESS_KEY_ID:
+#       from_secret: AWS_ACCESS_KEY_ID
+#   when:
+#     branch:
+#     - develop
+#   commands:
+#   - cd terraform/stage
+#   - terraform init -backend-config=backend-config
+#   - terraform apply -auto-approve
 
-platform:
-  os: linux
-  arch: amd64
+# - name: "Apply - Production"
+#   image: hashicorp/terraform:0.12.26
+#   depends_on: [ clone ]
+#   environment:
+#     AWS_DEFAULT_REGION:
+#       from_secret: AWS_DEFAULT_REGION
+#     AWS_SECRET_ACCESS_KEY:
+#       from_secret: AWS_SECRET_ACCESS_KEY
+#     AWS_ACCESS_KEY_ID:
+#       from_secret: AWS_ACCESS_KEY_ID
+#   when:
+#     branch:
+#     - master
+#   commands:
+#   - cd terraform/production
+#   - terraform init -backend-config=backend-config
+#   - terraform apply -auto-approve
 
-trigger:
-  event:
-  - promote
-  target:
-  - destroy-stage
-  - apply-stage
+
+# ---
+# kind: pipeline
+# type: docker
+# name: Infrastructure
+
+# platform:
+#   os: linux
+#   arch: amd64
+
+# trigger:
+#   event:
+#   - promote
+#   target:
+#   - destroy-stage
+#   - apply-stage
 
 
-steps:
-- name: "Manual Destroy - Stage"
-  image: hashicorp/terraform:0.12.26
-  depends_on: [ clone ]
-  environment:
-    AWS_DEFAULT_REGION:
-      from_secret: AWS_DEFAULT_REGION
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-  commands:
-  - cd terraform/stage
-  - terraform init -backend-config=backend-config
-  - terraform destroy -auto-approve
-  when:
-    target:
-    - destroy-stage
+# steps:
+# - name: "Manual Destroy - Stage"
+#   image: hashicorp/terraform:0.12.26
+#   depends_on: [ clone ]
+#   environment:
+#     AWS_DEFAULT_REGION:
+#       from_secret: AWS_DEFAULT_REGION
+#     AWS_SECRET_ACCESS_KEY:
+#       from_secret: AWS_SECRET_ACCESS_KEY
+#     AWS_ACCESS_KEY_ID:
+#       from_secret: AWS_ACCESS_KEY_ID
+#   commands:
+#   - cd terraform/stage
+#   - terraform init -backend-config=backend-config
+#   - terraform destroy -auto-approve
+#   when:
+#     target:
+#     - destroy-stage
 
-- name: "Manual Apply - Stage"
-  image: hashicorp/terraform:0.12.26
-  depends_on: [ clone ]
-  environment:
-    AWS_DEFAULT_REGION:
-      from_secret: AWS_DEFAULT_REGION
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-  when:
-    target:
-    - apply-stage
-  commands:
-  - cd terraform/stage
-  - terraform init -backend-config=backend-config
-  - terraform apply -auto-approve
-  when:
-    target:
-    - apply-stage
+# - name: "Manual Apply - Stage"
+#   image: hashicorp/terraform:0.12.26
+#   depends_on: [ clone ]
+#   environment:
+#     AWS_DEFAULT_REGION:
+#       from_secret: AWS_DEFAULT_REGION
+#     AWS_SECRET_ACCESS_KEY:
+#       from_secret: AWS_SECRET_ACCESS_KEY
+#     AWS_ACCESS_KEY_ID:
+#       from_secret: AWS_ACCESS_KEY_ID
+#   when:
+#     target:
+#     - apply-stage
+#   commands:
+#   - cd terraform/stage
+#   - terraform init -backend-config=backend-config
+#   - terraform apply -auto-approve
+#   when:
+#     target:
+#     - apply-stage
 
 
 ---
 kind: signature
-hmac: ce8e85761aab4caa14b309d7fd708f40247615ea6f3f16100d383db0eb08a131
+hmac: 63f5be523e3cae8284de5b6c79bef9db93706c0df6dd6588d7e9f478468cbb00
 
 ...

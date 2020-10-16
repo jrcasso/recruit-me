@@ -1,4 +1,0 @@
-bucket       = "terraform-remote-primary"
-key          = "production/terraform.tfstate"
-region       = "us-east-1"
-organization = "primary"

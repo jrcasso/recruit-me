@@ -1,6 +1,6 @@
 FROM node:13.10
 
-COPY ./ /backend
+COPY . /backend
 
 WORKDIR /backend
 
