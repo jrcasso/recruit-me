@@ -1,20 +1,17 @@
-import { MotdModel } from '../models/motd.model';
-import * as Mongoose from 'mongoose';
-import * as ExpressValidator from 'express-validator';
+import { Motd } from '../models/motd.model';
+const mongoose = require( 'mongoose' );
+const { validationResult } = require('express-validator');
+
 /**
  * MotdController
  *
  * @description :: Server-side logic for managing motds.
  */
 export class MotdController {
-  constructor() {
-    this.model = new MotdModel()
-  }
-
-  public model: any;
+  constructor() { }
 
   public list(req, res): any {
-    this.model.find((err, motds) => {
+    Motd.find((err, motds) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting motd.',
@@ -27,8 +24,8 @@ export class MotdController {
 
   public show(req, res): any {
     const id = req.params.id;
-    if (Mongoose.Types.ObjectId.isValid(id)) {
-      this.model.findOne({_id: id}, (err, motd) => {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      Motd.findOne({_id: id}, (err, motd) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when getting motd.',
@@ -50,17 +47,16 @@ export class MotdController {
   }
 
   public create(req, res): any {
-    const errors = ExpressValidator.validationResult(req);
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const motd = new this.model.schema({
+    const motd = new Motd({
       message : req.body.message,
       foreground : req.body.foreground,
       background : req.body.background,
       timestamp : req.body.timestamp
-
     });
 
     motd.save((err, _motd) => {
@@ -75,14 +71,14 @@ export class MotdController {
   }
 
   public update(req, res): any {
-    const errors = ExpressValidator.validationResult(req);
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
     const id = req.params.id;
-    if (Mongoose.Types.ObjectId.isValid(id)) {
-      this.model.findOne({_id: id}, (err, motd) => {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      Motd.findOne({_id: id}, (err, motd) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -121,8 +117,8 @@ export class MotdController {
 
   public remove(req, res): any {
     const id = req.params.id;
-    if (Mongoose.Types.ObjectId.isValid(id)) {
-      this.model.findByIdAndRemove(id, (err, motd) => {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      Motd.findByIdAndRemove(id, (err, motd) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when deleting the motd.',

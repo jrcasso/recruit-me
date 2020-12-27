@@ -1,6 +1,6 @@
 import { MotdController } from '../controllers/motd.controller';
 import * as Express from 'express';
-const { check, body, checkSchema } = require('express-validator');
+const { check } = require('express-validator');
 
 export class MotdRouter {
   constructor() {

@@ -12,7 +12,6 @@ module.exports = class UserHelper {
     mongoose.connect('mongodb://mongo:27017/app', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      bufferCommands: false,
       useFindAndModify: false,
     }, function(err) {
       if(err) console.log(err);
