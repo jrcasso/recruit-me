@@ -64,7 +64,7 @@ export class UserController {
       {email: new_user.email}
     ]}).exec(function (err, user) {
       if (!user) {
-        user.save(function (err, user) {
+        new_user.save(function (err, user) {
           if (err) {
             return res.status(500).json({
               message: 'Error when creating user',
