@@ -1,9 +1,9 @@
-// import { ApiError } from '../../lib/handlers/errors'; # Upgrade to TS
 const request = require('supertest');
 const RandomHelper = require('../helpers/random.helper');
-const UserHelper = require('../helpers/user.helper');
+import { UserHelper } from '../helpers/user.helper';
+import { done, async, expect, it, describe, beforeAll, beforeEach, afterEach } from 'jasmine';
 
-describe('API endpoint for user', function() {
+describe('API endpoint for user', () => {
   beforeAll(function() {
     // This host is docker compatible
     this.localRequest = request('http://express:3000')
@@ -39,9 +39,9 @@ describe('API endpoint for user', function() {
         .expect(400, done)
     });
 
-    it('returns a specific user for a valid ObjectId', async function(done) {
+    it('returns a specific user for a valid ObjectId', async(() => {
       // Create user in database
-      let user = await this.helper.create({ ...this.user, ...{ active : true, verified : false } });
+      let user = this.helper.create({ ...this.user, ...{ active : true, verified : false } });
 
       this.localRequest
         .get(`${this.apiPath}/user/${user._id}`)
@@ -60,7 +60,7 @@ describe('API endpoint for user', function() {
           if (err) return done(err);
           done();
         });
-    });
+    }));
   });
 
   describe('with GET /user/', function() {

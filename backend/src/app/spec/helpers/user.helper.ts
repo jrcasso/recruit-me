@@ -1,13 +1,9 @@
-const userModel = require('../../models/user.model.js');
+// import { User } from '../../models/user.model';
+import { User } from '../../models/user.model';
 const mongoose = require( 'mongoose' );
 
-/**
- * userController.js
- *
- * @description :: Server-side logic for managing users.
- */
 
-module.exports = class UserHelper {
+export class UserHelper {
   constructor() {
     mongoose.connect('mongodb://mongo:27017/app', {
       useNewUrlParser: true,
@@ -22,8 +18,8 @@ module.exports = class UserHelper {
     db.once('open', function() { });
   }
 
-  async create(user) {
-    var newUser = new userModel({
+  public create(user) {
+    var newUser = new User({
       email :  user.email,
       password : user.password,
       firstname : user.firstname,
@@ -32,23 +28,23 @@ module.exports = class UserHelper {
       verified : user.verified,
       created : Date.now(),
     });
-    return await newUser.save();
+    return newUser.save();
   }
 
-  async retrieve(id) {
-    return userModel.findOne({_id: id}, function (err, user) {
+  public retrieve(id) {
+    return User.findOne({_id: id}, function (err, user) {
       return user;
     });
   }
 
-  async remove(id) {
-    userModel.findByIdAndRemove(id, function (err, user) {
+  public remove(id) {
+    User.findByIdAndRemove(id, function (err, user) {
       if (err) return console.log(err);
     });
   }
 
-  async removeAll() {
-    userModel.deleteMany(function (err) {
+  public removeAll() {
+    User.deleteMany(function (err) {
       if (err) return console.log(err);
     });
   }

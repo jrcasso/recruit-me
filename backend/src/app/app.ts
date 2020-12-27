@@ -26,8 +26,8 @@ const route = new ApiRouter()
 mongoose.connect('mongodb://mongo:27017/app', {
   useNewUrlParser: true,
   useFindAndModify: false,
-  useUnifiedTopology: true
-  // bufferCommands: false,
+  useUnifiedTopology: true,
+  bufferCommands: false,
 });
 
 var db = mongoose.connection;
