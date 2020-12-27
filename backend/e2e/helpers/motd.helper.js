@@ -1,5 +1,4 @@
-const motdModel = require('../../models/motd.model.js');
-const mongoose = require( 'mongoose' );
+const mongo = require('mongodb');
 
 /**
  * motdController.js
@@ -7,34 +6,34 @@ const mongoose = require( 'mongoose' );
  * @description :: Server-side logic for managing motds.
  */
 
-module.exports = class MotdHelper {
+module.exports = class DatabaseHelper {
   constructor() {
-    mongoose.connect('mongodb://mongo:27017/app', {
+    mongo.connect(
+      'mongodb://mongo:27017', {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
-      bufferCommands: false,
-      useFindAndModify: false,
-    }, function(err) {
-      if(err) console.log(err);
+      useUnifiedTopology: true
+    },(err, client) => {
+      if (err) throw err;
+      this.database = client.db("app");
+      this.motds = this.database.collection("motds")
     });
-    let db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'connection error:'));
-    db.once('open', function() { });
+  }
+
+  async clean() {
+    await this.motd.deleteMany({ })
   }
 
   async create(motd) {
-    var newMotd = new motdModel({
+    return await this.motds.insertOne({
       message : motd.message,
       foreground : motd.foreground,
       background : motd.background,
       timestamp : motd.timestamp
     });
-    return await newMotd.save();
   }
 
   async remove(id) {
-    motdModel.findByIdAndRemove(id, function (err, motd) {
-      if (err) return console.log(err);
-    });
+    let payload = { _id: mongo.ObjectID(id) }
+    return await this.motds.deleteOne({ _id: mongo.ObjectID(id) });
   }
 }

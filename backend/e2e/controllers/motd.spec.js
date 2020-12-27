@@ -11,7 +11,8 @@ describe('API endpoint for motd', function() {
     this.helper = new MotdHelper();
   });
 
-  beforeEach(function() {
+  beforeEach(async function() {
+    // await this.helper.clean()
     this.numMotds = RandomHelper.randomInt(1, 10);
     this.message = `test-${RandomHelper.randomString(10)}`;
     this.foreground = RandomHelper.randomColor();
@@ -45,14 +46,13 @@ describe('API endpoint for motd', function() {
     it('returns 200 for valid ObjectIds', async function(done) {
       // Create motd in database
       let motd = await this.helper.create(this.motd);
-
       this.localRequest
-        .get(`${this.apiPath}/motd/${motd._id}`)
+        .get(`${this.apiPath}/motd/${motd.insertedId}`)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, done)
 
-      this.ids.push(motd._id); // Add to clean-up
+      this.ids.push(motd.insertedId); // Add to clean-up
     });
   });
 
@@ -61,7 +61,7 @@ describe('API endpoint for motd', function() {
       // Generate a random number of messages
       for (let index = 0; index < this.numMotds; index++) {
         let motd = await this.helper.create(this.motd);
-        this.ids.push(motd._id);
+        this.ids.push(motd.insertedId);
       }
       this.localRequest
         .get(`${this.apiPath}/motd/`)
@@ -160,12 +160,11 @@ describe('API endpoint for motd', function() {
     it('returns 200 for valid ObjectIds', async function(done) {
       // Create motd in the database
       let motd = await this.helper.create(this.motd);
-      expect(motd.message).toBe(this.message);
 
       // Update the motd and expect a new message
       newMotd = { message: 'test-new-message' };
       this.localRequest
-        .put(`${this.apiPath}/motd/${motd._id}`)
+        .put(`${this.apiPath}/motd/${motd.insertedId}`)
         .send(newMotd)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -174,7 +173,7 @@ describe('API endpoint for motd', function() {
         })
         .expect(200, done)
 
-      this.ids.push(motd._id); // Add to clean-up
+      this.ids.push(motd.insertedId); // Add to clean-up
     });
   });
 
@@ -194,11 +193,11 @@ describe('API endpoint for motd', function() {
       // Delete the motd and expect a new message
       newMotd = { message: 'test-new-message' };
       this.localRequest
-        .delete(`${this.apiPath}/motd/${motd._id}`)
+        .delete(`${this.apiPath}/motd/${motd.insertedId}`)
         .set('Accept', 'application/json')
         .expect(204, done)
 
-      this.ids.push(motd._id); // Add to clean-up
+      this.ids.push(motd.insertedId); // Add to clean-up
     });
   });
 });

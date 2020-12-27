@@ -18,39 +18,48 @@ import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import { ApiRouter }  from "./routes/api.router"
 
-const app = Express();
-const port = 3000;
-const host = "0.0.0.0";
-const route = new ApiRouter()
+class App {
+  app: any;
+  api_router: any;
+  constructor() {
+//     this.setupDb();
+//     this.configure_middleware();
+//     this.listen();
+    this.initialize_database_connection().then(() => {
+      this.app = Express();
+      this.api_router = new ApiRouter()
+      this.configure_middleware();
+      this.run();
+    })
+  }
 
-mongoose.connect('mongodb://mongo:27017/app', {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-  bufferCommands: false,
-});
+  private async initialize_database_connection(host="mongo", port=27017, database="app"): Promise<void> {
+    let endpoint = `mongodb://${host}:${port}/${database}`;
+    console.log(`Connecting to ${endpoint}`);
+    await mongoose.connect(`mongodb://${host}:${port}/${database}`, {
+      useNewUrlParser: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+      bufferCommands: false,
+    });
+    console.log(`Connected to ${endpoint}`);
+  }
 
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connection to `app` database successful.');
-});
+  private configure_middleware(): void {
+    this.app.use(Cors())
+    this.app.use(bodyParser.urlencoded({extended: true}));
+    this.app.use(bodyParser.json());
+    this.app.use('/api/v1', this.api_router.router)
+  }
 
-app.use(Cors())
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
-app.use('/api/v1', route.router)
+  private run(host="0.0.0.0", port=3000): void {
+    this.app.listen( port, host, () => {
+      console.log( `server started at http://${ host }:${ port }` );
+    });
+  }
+}
 
-app.listen( port, host, () => {
-    console.log( `server started at http://${ host }:${ port }` );
-} );
-
-// import * as Cors from 'cors';
-// import * as bodyParser from 'body-parser';
-// import { ApiRouter }  from "./routes/api.router"
-// import express from "express";
-// import * as Mongoose from "mongoose";
-
+new App()
 // class App {
 //   public express: express.Application;
 //   private port = 3000;

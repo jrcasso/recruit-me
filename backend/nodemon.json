@@ -1,6 +1,8 @@
 {
     "ignore": [
         "*/**/*[sS]pec.js",
-        "*/**/*[hH]elper.js"
+        "*/**/*[sS]pec.ts",
+        "*/**/*[hH]elper.js",
+        "*/**/*[hH]elper.ts"
     ]
 }
