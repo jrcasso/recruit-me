@@ -1,16 +1,20 @@
-const motdModel = require('../models/motd.model.js');
-const mongoose = require( 'mongoose' );
-const { validationResult } = require('express-validator');
-
+import { MotdModel } from '../models/motd.model';
+import * as Mongoose from 'mongoose';
+import * as ExpressValidator from 'express-validator';
 /**
- * motdController.js
+ * MotdController
  *
  * @description :: Server-side logic for managing motds.
  */
-module.exports = {
+export class MotdController {
+  constructor() {
+    this.model = new MotdModel()
+  }
 
-    list: function (req, res) {
-    motdModel.find(function (err, motds) {
+  public model: any;
+
+  public list(req, res): any {
+    this.model.find((err, motds) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting motd.',
@@ -19,12 +23,12 @@ module.exports = {
       }
       return res.json(motds);
     });
-  },
+  }
 
-  show: function (req, res) {
-    var id = req.params.id;
-    if (mongoose.Types.ObjectId.isValid(id)) {
-      motdModel.findOne({_id: id}, function (err, motd) {
+  public show(req, res): any {
+    const id = req.params.id;
+    if (Mongoose.Types.ObjectId.isValid(id)) {
+      this.model.findOne({_id: id}, (err, motd) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when getting motd.',
@@ -43,15 +47,15 @@ module.exports = {
         message: 'Bad Request: malformed ObjectId'
       });
     }
-  },
+  }
 
-  create: function (req, res) {
-    const errors = validationResult(req);
+  public create(req, res): any {
+    const errors = ExpressValidator.validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    var motd = new motdModel({
+    const motd = new this.model.schema({
       message : req.body.message,
       foreground : req.body.foreground,
       background : req.body.background,
@@ -59,7 +63,7 @@ module.exports = {
 
     });
 
-    motd.save(function (err, motd) {
+    motd.save((err, _motd) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when creating motd',
@@ -68,17 +72,17 @@ module.exports = {
       }
       return res.status(201).json(motd);
     });
-  },
+  }
 
-  update: function (req, res) {
-    const errors = validationResult(req);
+  public update(req, res): any {
+    const errors = ExpressValidator.validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    var id = req.params.id;
-    if (mongoose.Types.ObjectId.isValid(id)) {
-      motdModel.findOne({_id: id}, function (err, motd) {
+    const id = req.params.id;
+    if (Mongoose.Types.ObjectId.isValid(id)) {
+      this.model.findOne({_id: id}, (err, motd) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -97,11 +101,11 @@ module.exports = {
         motd.background = req.body.background ? req.body.background : motd.background;
         motd.timestamp = req.body.timestamp ? req.body.timestamp : motd.timestamp;
 
-        motd.save(function (err, motd) {
-          if (err) {
+        motd.save((_err, _motd) => {
+          if (_err) {
             return res.status(500).json({
               message: 'Error when updating motd.',
-              error: err
+              error: _err
             });
           }
 
@@ -113,12 +117,12 @@ module.exports = {
         message: 'Bad Request: malformed ObjectId'
       });
     }
-  },
+  }
 
-  remove: function (req, res) {
-    var id = req.params.id;
-    if (mongoose.Types.ObjectId.isValid(id)) {
-      motdModel.findByIdAndRemove(id, function (err, motd) {
+  public remove(req, res): any {
+    const id = req.params.id;
+    if (Mongoose.Types.ObjectId.isValid(id)) {
+      this.model.findByIdAndRemove(id, (err, motd) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when deleting the motd.',
@@ -133,4 +137,4 @@ module.exports = {
       });
     }
   }
-};
+}

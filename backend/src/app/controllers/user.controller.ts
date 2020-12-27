@@ -1,4 +1,4 @@
-var userModel = require('../models/user.model.js');
+import { User } from '../models/user.model';
 const mongoose = require( 'mongoose' );
 const { validationResult } = require('express-validator');
 
@@ -7,10 +7,11 @@ const { validationResult } = require('express-validator');
  *
  * @description :: Server-side logic for managing users.
  */
-module.exports = {
+export class UserController {
+  constructor() {}
 
-  list: function (req, res) {
-    userModel.find(function (err, users) {
+  public list(req, res): void {
+    User.find(function (err, users) {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting users.',
@@ -19,14 +20,14 @@ module.exports = {
       }
       return res.json(users);
     });
-  },
+  }
 
-  show: function (req, res) {
+  public show(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    userModel.findOne({_id: req.params.id}, function (err, user) {
+    User.findOne({_id: req.params.id}, function (err, user) {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting user.',
@@ -40,14 +41,14 @@ module.exports = {
       }
       return res.json(user);
     });
-  },
+  }
 
-  create: function (req, res) {
+  public create(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    var new_user = new userModel({
+    var new_user = new User({
       firstname : req.body.firstname,
       lastname : req.body.lastname,
       email : req.body.email,
@@ -59,11 +60,11 @@ module.exports = {
 
     // Determine if this user email has already been registered
     // If so, return bad request. Else, create the user.
-    userModel.findOne({$or: [
+    User.findOne({$or: [
       {email: new_user.email}
     ]}).exec(function (err, user) {
       if (!user) {
-        new_user.save(function (err, user) {
+        user.save(function (err, user) {
           if (err) {
             return res.status(500).json({
               message: 'Error when creating user',
@@ -87,14 +88,14 @@ module.exports = {
         });
       }
     });
-  },
+  }
 
-  update: function (req, res) {
+  public update(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    userModel.findOne({_id: req.params.id}, function (err, user) {
+    User.findOne({_id: req.params.id}, (err, user) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when updating user',
@@ -114,8 +115,7 @@ module.exports = {
       user.password = req.body.password ? req.body.password : user.password;
       user.active = req.body.active ? req.body.active : user.active;
       user.verified = req.body.verified ? req.body.verified : user.verified;
-
-      user.save(function (err, user) {
+      user.save((err, user) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when updating user.',
@@ -126,14 +126,14 @@ module.exports = {
         return res.json(user);
       });
     });
-  },
+  }
 
-  remove: function (req, res) {
+  public remove(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    userModel.findByIdAndRemove(req.params.id, function (err, user) {
+    User.findByIdAndRemove(req.params.id, function (err, user) {
       if (err) {
         return res.status(500).json({
           message: 'Error when removing user.',
@@ -143,4 +143,4 @@ module.exports = {
       return res.status(204).json();
     });
   }
-};
+}

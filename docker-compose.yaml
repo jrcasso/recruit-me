@@ -19,7 +19,7 @@ services:
     ports:
       - "4200:4200"
     volumes:
-      - ./frontend/node_modules:/frontend/node_modules
+      - frontend_node_modules:/frontend/node_modules
       - ./frontend:/frontend
     command: "node_modules/.bin/ng serve --host 0.0.0.0"
     depends_on:
@@ -31,9 +31,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./backend/node_modules:/backend/node_modules
+      - backend_node_modules:/backend/node_modules
       - ./backend:/backend
-    command: "node_modules/.bin/nodemon -L app.js"
+    command: "node_modules/.bin/nodemon -L src/app/app.ts"
     depends_on:
       - mongo-express
       - mongo
