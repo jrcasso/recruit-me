@@ -1,18 +1,18 @@
 const mongo = require('mongodb');
+const MongoClient = require('mongodb').MongoClient;
 
-/**
- * motdController.js
- *
- * @description :: Server-side logic for managing motds.
- */
 
 module.exports = class DatabaseHelper {
-  constructor() {
-    mongo.connect(
+  constructor() { }
+
+  async connect() {
+    this.database = new MongoClient(
       'mongodb://mongo:27017', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    },(err, client) => {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      }
+    )
+    return this.database.connect((err, client) => {
       if (err) throw err;
       this.database = client.db("app");
       this.motds = this.database.collection("motds")
@@ -20,11 +20,11 @@ module.exports = class DatabaseHelper {
   }
 
   async clean() {
-    await this.motd.deleteMany({ })
+    return this.motd.deleteMany({ })
   }
 
   async create(motd) {
-    return await this.motds.insertOne({
+    return this.motds.insertOne({
       message : motd.message,
       foreground : motd.foreground,
       background : motd.background,
@@ -33,7 +33,6 @@ module.exports = class DatabaseHelper {
   }
 
   async remove(id) {
-    let payload = { _id: mongo.ObjectID(id) }
-    return await this.motds.deleteOne({ _id: mongo.ObjectID(id) });
+    return this.motds.deleteOne({ _id: mongo.ObjectID(id) });
   }
 }

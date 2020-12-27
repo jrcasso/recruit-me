@@ -4,10 +4,12 @@ const RandomHelper = require('../helpers/random.helper');
 const UserHelper = require('../helpers/user.helper');
 
 describe('API endpoint for user', function() {
-  beforeAll(function() {
+  beforeAll(async function() {
+    this.helper = new UserHelper();
+    await this.helper.connect()
+
     // This host is docker compatible
     this.localRequest = request('http://express:3000')
-    this.helper = new UserHelper();
     this.apiPath = '/api/v1';
 
     this.email = "jdoe@test.justinshipscode.com"
@@ -44,7 +46,7 @@ describe('API endpoint for user', function() {
       let user = await this.helper.create({ ...this.user, ...{ active : true, verified : false } });
 
       this.localRequest
-        .get(`${this.apiPath}/user/${user._id}`)
+        .get(`${this.apiPath}/user/${user.insertedId}`)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
@@ -233,13 +235,11 @@ describe('API endpoint for user', function() {
     it('returns 200 for valid ObjectIds', async function(done) {
       // Create user in the database
       const user = await this.helper.create(this.user);
-      expect(user.firstname).toBe(this.firstname);
-      expect(user.lastname).toBe(this.lastname);
 
       // Update the user and expect new attributes
       const newUser = { ...this.user, ...{ firstname: 'Jane', lastname: 'Smith' } }
       this.localRequest
-        .put(`${this.apiPath}/user/${user._id}`)
+        .put(`${this.apiPath}/user/${user.insertedId}`)
         .send(newUser)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -269,11 +269,11 @@ describe('API endpoint for user', function() {
       const user = await this.helper.create(this.user);
 
       this.localRequest
-        .delete(`${this.apiPath}/user/${user._id}`)
+        .delete(`${this.apiPath}/user/${user.insertedId}`)
         .set('Accept', 'application/json')
         .expect(204, done)
 
-      const deletedUser = await this.helper.retrieve(this.user._id)
+      const deletedUser = await this.helper.retrieve(this.user.insertedId)
       expect(deletedUser).toBe(null)
     });
   });

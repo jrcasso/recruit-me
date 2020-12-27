@@ -4,11 +4,13 @@ const RandomHelper = require('../helpers/random.helper');
 const MotdHelper = require('../helpers/motd.helper');
 
 describe('API endpoint for motd', function() {
-  beforeAll(function() {
+  beforeAll(async function() {
+    this.helper = new MotdHelper();
+    await this.helper.connect()
+
     // This host is docker compatible
     this.localRequest = request('http://express:3000')
     this.apiPath = '/api/v1';
-    this.helper = new MotdHelper();
   });
 
   beforeEach(async function() {
@@ -45,7 +47,7 @@ describe('API endpoint for motd', function() {
 
     it('returns 200 for valid ObjectIds', async function(done) {
       // Create motd in database
-      let motd = await this.helper.create(this.motd);
+      const motd = await this.helper.create(this.motd);
       this.localRequest
         .get(`${this.apiPath}/motd/${motd.insertedId}`)
         .set('Accept', 'application/json')
