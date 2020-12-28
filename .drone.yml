@@ -50,7 +50,7 @@ steps:
   commands:
     - cd backend/
     - node_modules/.bin/nodemon backend/app.js
-  
+
 - name: "Lint: Shell files"
   image: koalaman/shellcheck-alpine:latest
   depends_on: [ clone ]
@@ -69,9 +69,16 @@ steps:
   commands:
     - hadolint ./frontend/Dockerfile ./backend/Dockerfile
 
-- name: "Lint: TypeScript"
+- name: "Lint: Backend TypeScript"
   image: node:latest
-  depends_on: ["Install: frontend"]
+  depends_on: [ clone ]
+  commands:
+    - cd backend/
+    - npx tslint -c tslint.json --project './'
+
+- name: "Lint: Frontend TypeScript"
+  image: node:latest
+  depends_on: [ clone ]
   commands:
     - cd frontend/
     - npx tslint -c tslint.json --project './'
