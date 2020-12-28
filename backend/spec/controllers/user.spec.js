@@ -6,22 +6,21 @@ const UserHelper = require('../helpers/user.helper');
 describe('API endpoint for user', function() {
   beforeAll(async function() {
     this.helper = new UserHelper();
-    await this.helper.connect()
-
-    // This host is docker compatible
-    this.localRequest = request('http://express:3000')
-    this.apiPath = '/api/v1';
-
-    this.email = "jdoe@test.justinshipscode.com"
-    this.password = "foob!@arBaz1023"
-    this.firstname = "John"
-    this.lastname = "Doe"
-    this.user = {
-      email: this.email,
-      password: this.password,
-      firstname: this.firstname,
-      lastname: this.lastname
-    };
+    await this.helper.connect().then(() => {
+      // This host is docker compatible
+      this.localRequest = request('http://express:3000')
+      this.apiPath = '/api/v1';
+      this.email = "jdoe@test.justinshipscode.com"
+      this.password = "foob!@arBaz1023"
+      this.firstname = "John"
+      this.lastname = "Doe"
+      this.user = {
+        email: this.email,
+        password: this.password,
+        firstname: this.firstname,
+        lastname: this.lastname
+      };
+    });
   });
 
   beforeEach(function() {

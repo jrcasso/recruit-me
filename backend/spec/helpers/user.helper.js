@@ -1,19 +1,22 @@
 const mongo = require('mongodb');
+const MongoClient = require('mongodb').MongoClient;
 
 
 module.exports = class UserHelper {
   constructor() { }
 
   async connect() {
-    return mongo.connect(
-      'mongodb://mongo:27017', {
+    this.client = new MongoClient('mongodb://mongo:27017', {
       useNewUrlParser: true,
       useUnifiedTopology: true
-    },(err, client) => {
-      if (err) throw err;
-      this.database = client.db("app");
-      this.users = this.database.collection("users")
     });
+    try {
+      await this.client.connect();
+      this.users = this.client.db("app").collection("users");
+      return Promise.resolve(this.users);
+    } catch (e) {
+        console.error(e);
+    }
   }
 
   async create(user) {
@@ -29,14 +32,26 @@ module.exports = class UserHelper {
   }
 
   async retrieve(id) {
-    return this.users.findOne({ _id: id });
+    if (this.client.isConnected) {
+      return this.users.findOne({ _id: id });
+    } else {
+      throw PromiseRejectionEvent
+    }
   }
 
   async remove(id) {
-    return this.users.deleteOne({ _id: mongo.ObjectID(id) });
+    if (this.client.isConnected) {
+      return this.users.deleteOne({ _id: mongo.ObjectID(id) });
+    } else {
+      throw PromiseRejectionEvent
+    }
   }
 
   async removeAll() {
-    return await this.users.deleteMany({ })
+    if (this.client.isConnected) {
+      return this.users.deleteMany({ })
+    } else {
+      throw PromiseRejectionEvent
+    }
   }
 }

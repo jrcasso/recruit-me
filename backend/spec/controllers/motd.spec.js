@@ -6,11 +6,11 @@ const MotdHelper = require('../helpers/motd.helper');
 describe('API endpoint for motd', function() {
   beforeAll(async function() {
     this.helper = new MotdHelper();
-    await this.helper.connect()
-
-    // This host is docker compatible
-    this.localRequest = request('http://express:3000')
-    this.apiPath = '/api/v1';
+    await this.helper.connect().then(() => {
+      // This host is docker compatible
+      this.localRequest = request('http://express:3000')
+      this.apiPath = '/api/v1';
+    })
   });
 
   beforeEach(async function() {

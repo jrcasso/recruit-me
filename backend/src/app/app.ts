@@ -22,9 +22,6 @@ class App {
   app: any;
   api_router: any;
   constructor() {
-//     this.setupDb();
-//     this.configure_middleware();
-//     this.listen();
     this.initialize_database_connection().then(() => {
       this.app = Express();
       this.api_router = new ApiRouter()
