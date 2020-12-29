@@ -1,1 +1,38 @@
-<p>register works!</p>
+<div class="grid-container">
+  <div class="banner">
+    <!-- TODO: Make this configurable via API, so that it can be rotated for marketing purposes -->
+    <img src="https://dummyimage.com/230x400/683ab7/ffffff.jpg&text=REGISTRATION">
+  </div>
+  <div class="form">
+    <mat-card-content class="medium-wrapper">
+      <div class="content">
+        <form [formGroup]="registrationForm">
+          <mat-form-field>
+            <mat-label> First Name </mat-label>
+            <input matInput type="text" formControlName="firstName"><br>
+          </mat-form-field><br>
+          <mat-form-field>
+            <mat-label> Last Name </mat-label>
+            <input matInput type="text" formControlName="lastName">
+          </mat-form-field><br>
+          <mat-form-field>
+            <mat-label> Email </mat-label>
+            <input matInput type="text" formControlName="email">
+          </mat-form-field><br>
+          <mat-form-field>
+            <mat-label> Password </mat-label>
+            <input matInput type="text" formControlName="password">
+          </mat-form-field><br>
+          <mat-form-field>
+            <mat-label> Confirm Password </mat-label>
+            <input matInput type="text" formControlName="confirmPassword">
+          </mat-form-field>
+        </form>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="center">
+      <button mat-raised-button color="accent" routerLink="/auth/register" routerLinkActive="active" matTooltip="Register">Submit</button>
+      <br><h6><a routerLink="/auth/login" routerLinkActive="active">Go to login</a></h6>
+    </mat-card-actions>
+  </div>
+</div>

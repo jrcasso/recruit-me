@@ -12,11 +12,17 @@ import { LoginComponent } from '@components/login/login.component';
 import { RegisterComponent } from '@components/register/register.component';
 import { ResetComponent } from '@components/reset/reset.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { AuthComponent } from './components/auth/auth.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 const routes: Routes = [
-  { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
+  { path: 'auth', component: AuthComponent,
+    children: [
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent }
+    ]
+  },
   { path: 'reset', component: ResetComponent },
   { path: 'welcome', component: WelcomeComponent },
   { path: 'home', component: HomeComponent },
@@ -33,11 +39,14 @@ const routes: Routes = [
     RegisterComponent,
     ResetComponent,
     ToolbarComponent,
+    AuthComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
     MaterialModule,
   ],
   providers: [],
