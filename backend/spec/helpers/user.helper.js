@@ -1,29 +1,26 @@
-const userModel = require('../../models/user.model.js');
-const mongoose = require( 'mongoose' );
+const mongo = require('mongodb');
+const MongoClient = require('mongodb').MongoClient;
 
-/**
- * userController.js
- *
- * @description :: Server-side logic for managing users.
- */
 
 module.exports = class UserHelper {
-  constructor() {
-    mongoose.connect('mongodb://mongo:27017/app', {
+  constructor() { }
+
+  async connect() {
+    this.client = new MongoClient('mongodb://mongo:27017', {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
-      bufferCommands: false,
-      useFindAndModify: false,
-    }, function(err) {
-      if(err) console.log(err);
+      useUnifiedTopology: true
     });
-    let db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'connection error:'));
-    db.once('open', function() { });
+    try {
+      await this.client.connect();
+      this.users = this.client.db('app').collection('users');
+      return Promise.resolve(this.users);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async create(user) {
-    var newUser = new userModel({
+    return this.users.insertOne({
       email :  user.email,
       password : user.password,
       firstname : user.firstname,
@@ -32,24 +29,29 @@ module.exports = class UserHelper {
       verified : user.verified,
       created : Date.now(),
     });
-    return await newUser.save();
   }
 
   async retrieve(id) {
-    return userModel.findOne({_id: id}, function (err, user) {
-      return user;
-    });
+    if (this.client.isConnected) {
+      return this.users.findOne({ _id: id });
+    } else {
+      throw PromiseRejectionEvent;
+    }
   }
 
   async remove(id) {
-    userModel.findByIdAndRemove(id, function (err, user) {
-      if (err) return console.log(err);
-    });
+    if (this.client.isConnected) {
+      return this.users.deleteOne({ _id: mongo.ObjectID(id) });
+    } else {
+      throw PromiseRejectionEvent;
+    }
   }
 
   async removeAll() {
-    userModel.deleteMany(function (err) {
-      if (err) return console.log(err);
-    });
+    if (this.client.isConnected) {
+      return this.users.deleteMany({ });
+    } else {
+      throw PromiseRejectionEvent;
+    }
   }
-}
+};

@@ -1,40 +1,50 @@
-const motdModel = require('../../models/motd.model.js');
-const mongoose = require( 'mongoose' );
+const mongo = require('mongodb');
+const MongoClient = require('mongodb').MongoClient;
 
-/**
- * motdController.js
- *
- * @description :: Server-side logic for managing motds.
- */
 
 module.exports = class MotdHelper {
-  constructor() {
-    mongoose.connect('mongodb://mongo:27017/app', {
+  constructor() { }
+
+  async connect() {
+    this.client = new MongoClient('mongodb://mongo:27017', {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
-      bufferCommands: false,
-      useFindAndModify: false,
-    }, function(err) {
-      if(err) console.log(err);
+      useUnifiedTopology: true
     });
-    let db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'connection error:'));
-    db.once('open', function() { });
+    try {
+      await this.client.connect();
+      this.motds = this.client.db('app').collection('motds');
+      return Promise.resolve(this.motds);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async create(motd) {
-    var newMotd = new motdModel({
-      message : motd.message,
-      foreground : motd.foreground,
-      background : motd.background,
-      timestamp : motd.timestamp
-    });
-    return await newMotd.save();
+    if (this.client.isConnected) {
+      return this.motds.insertOne({
+        message : motd.message,
+        foreground : motd.foreground,
+        background : motd.background,
+        timestamp : motd.timestamp
+      });
+    } else {
+      throw PromiseRejectionEvent;
+    }
   }
 
   async remove(id) {
-    motdModel.findByIdAndRemove(id, function (err, motd) {
-      if (err) return console.log(err);
-    });
+    if (this.client.isConnected) {
+      return this.motds.deleteOne({ _id: mongo.ObjectID(id) });
+    } else {
+      throw PromiseRejectionEvent;
+    }
   }
-}
+
+  async removeAll() {
+    if (this.client.isConnected) {
+      return this.motds.deleteMany({ });
+    } else {
+      throw PromiseRejectionEvent;
+    }
+  }
+};
