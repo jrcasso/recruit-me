@@ -23,9 +23,5 @@
       "@routes/*": ["src/app/routes/*"],
       "@lib/*": ["src/lib/*"],
     }
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
   }
 }

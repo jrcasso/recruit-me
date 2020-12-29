@@ -19,17 +19,17 @@ import * as mongoose from 'mongoose';
 import { ApiRouter } from './routes/api.router';
 
 class App {
+  public app: Express.Application;
+  public apiRouter: ApiRouter;
+
   constructor() {
     this.connect().then(() => {
-      this.app = Express();
+      this.app = Express(); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
       this.apiRouter = new ApiRouter();
       this.configure_middleware();
       this.run();
-    });
+    }).catch((err) => console.error(err));
   }
-
-  public app: any;
-  public apiRouter: ApiRouter;
 
   private async connect(host= 'mongo', port= 27017, database= 'app'): Promise<void> {
     const endpoint = `mongodb://${host}:${port}/${database}`;
@@ -44,7 +44,7 @@ class App {
   }
 
   private configure_middleware(): void {
-    this.app.use(Cors());
+    this.app.use(Cors()); // eslint-disable-line @typescript-eslint/no-unsafe-call
     this.app.use(bodyParser.urlencoded({extended: true}));
     this.app.use(bodyParser.json());
     this.app.use('/api/v1', this.apiRouter.router);
