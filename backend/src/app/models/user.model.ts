@@ -1,9 +1,9 @@
-import { model, Model, Schema, Document } from "mongoose";
+import { model, Model, Schema, Document } from 'mongoose';
 
 
 const UserSchema: Schema = new Schema({
   email :  { type: String, unique: true, required: true },
-  password : { type: String, required: true },
+  password : { type: String, required: true, select: false },
   firstname : String,
   lastname : String,
   created : Date,
@@ -17,8 +17,8 @@ export interface IUser extends Document {
   firstname: string;
   lastname: string;
   created: Date;
-  active: Boolean;
-  verified: Boolean;
+  active: boolean;
+  verified: boolean;
 }
 
 export const User: Model<IUser> = model('User', UserSchema);

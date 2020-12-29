@@ -12,10 +12,10 @@ module.exports = class MotdHelper {
     });
     try {
       await this.client.connect();
-      this.motds = this.client.db("app").collection("motds");
+      this.motds = this.client.db('app').collection('motds');
       return Promise.resolve(this.motds);
     } catch (e) {
-        console.error(e);
+      console.error(e);
     }
   }
 
@@ -28,7 +28,7 @@ module.exports = class MotdHelper {
         timestamp : motd.timestamp
       });
     } else {
-      throw PromiseRejectionEvent
+      throw PromiseRejectionEvent;
     }
   }
 
@@ -36,15 +36,15 @@ module.exports = class MotdHelper {
     if (this.client.isConnected) {
       return this.motds.deleteOne({ _id: mongo.ObjectID(id) });
     } else {
-        throw PromiseRejectionEvent
+      throw PromiseRejectionEvent;
     }
   }
 
   async removeAll() {
     if (this.client.isConnected) {
-      return this.motds.deleteMany({ })
+      return this.motds.deleteMany({ });
     } else {
-      throw PromiseRejectionEvent
+      throw PromiseRejectionEvent;
     }
   }
-}
+};

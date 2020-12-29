@@ -1,0 +1,13 @@
+{
+    "exclude": [
+    ],
+    "include": [
+        "spec/**/*.ts",
+        "spec/**/*.d.ts",
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+        "spec/**/*.js",
+        "src/**/*.js",
+        ".eslintrc.js"
+    ]
+}

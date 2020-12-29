@@ -108,7 +108,7 @@ export class MotdController {
 
           return res.json(motd);
         });
-      });
+      }).catch((err) => console.error(err));
     } else {
       return res.status(400).json({
         message: 'Bad Request: malformed ObjectId'
@@ -127,7 +127,7 @@ export class MotdController {
           });
         }
         return res.status(204).json();
-      });
+      }).catch((err) => console.error(err));
     } else {
       return res.status(400).json({
         message: 'Bad Request: malformed ObjectId'

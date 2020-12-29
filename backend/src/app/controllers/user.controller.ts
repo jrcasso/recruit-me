@@ -11,7 +11,7 @@ export class UserController {
   constructor() {}
 
   public list(req, res): void {
-    User.find(function (err, users) {
+    User.find((err, users) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting users.',
@@ -19,7 +19,7 @@ export class UserController {
         });
       }
       return res.json(users);
-    });
+    }).catch((err) => console.error(err));
   }
 
   public show(req, res): void {
@@ -27,7 +27,7 @@ export class UserController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    User.findOne({_id: req.params.id}, function (err, user) {
+    User.findOne({_id: req.params.id}, (err, user) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when getting user.',
@@ -40,7 +40,7 @@ export class UserController {
         });
       }
       return res.json(user);
-    });
+    }).catch((err) => console.error(err));
   }
 
   public create(req, res): void {
@@ -48,7 +48,7 @@ export class UserController {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    var new_user = new User({
+    const new_user = new User({
       firstname : req.body.firstname,
       lastname : req.body.lastname,
       email : req.body.email,
@@ -60,19 +60,20 @@ export class UserController {
 
     // Determine if this user email has already been registered
     // If so, return bad request. Else, create the user.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     User.findOne({$or: [
       {email: new_user.email}
-    ]}).exec(function (err, user) {
+    ]}).exec((err, user) => {
       if (!user) {
-        new_user.save(function (err, user) {
-          if (err) {
+        new_user.save((e, u) => {
+          if (e) {
             return res.status(500).json({
               message: 'Error when creating user',
-              error: err
+              error: e
             });
           } else {
           }
-          return res.status(201).json(user);
+          return res.status(201).json(u);
         });
       } else {
         return res.status(400).json({
@@ -115,17 +116,17 @@ export class UserController {
       user.password = req.body.password ? req.body.password : user.password;
       user.active = req.body.active ? req.body.active : user.active;
       user.verified = req.body.verified ? req.body.verified : user.verified;
-      user.save((err, user) => {
-        if (err) {
+      user.save((e, u) => {
+        if (e) {
           return res.status(500).json({
             message: 'Error when updating user.',
-            error: err
+            error: e
           });
         }
 
-        return res.json(user);
+        return res.json(u);
       });
-    });
+    }).catch((err) => console.error(err));
   }
 
   public remove(req, res): void {
@@ -133,7 +134,7 @@ export class UserController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    User.findByIdAndRemove(req.params.id, function (err, user) {
+    User.findByIdAndRemove(req.params.id, (err, user) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when removing user.',
@@ -141,6 +142,6 @@ export class UserController {
         });
       }
       return res.status(204).json();
-    });
+    }).catch((err) => console.error(err));
   }
 }

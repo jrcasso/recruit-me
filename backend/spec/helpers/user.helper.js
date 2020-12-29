@@ -12,10 +12,10 @@ module.exports = class UserHelper {
     });
     try {
       await this.client.connect();
-      this.users = this.client.db("app").collection("users");
+      this.users = this.client.db('app').collection('users');
       return Promise.resolve(this.users);
     } catch (e) {
-        console.error(e);
+      console.error(e);
     }
   }
 
@@ -35,7 +35,7 @@ module.exports = class UserHelper {
     if (this.client.isConnected) {
       return this.users.findOne({ _id: id });
     } else {
-      throw PromiseRejectionEvent
+      throw PromiseRejectionEvent;
     }
   }
 
@@ -43,15 +43,15 @@ module.exports = class UserHelper {
     if (this.client.isConnected) {
       return this.users.deleteOne({ _id: mongo.ObjectID(id) });
     } else {
-      throw PromiseRejectionEvent
+      throw PromiseRejectionEvent;
     }
   }
 
   async removeAll() {
     if (this.client.isConnected) {
-      return this.users.deleteMany({ })
+      return this.users.deleteMany({ });
     } else {
-      throw PromiseRejectionEvent
+      throw PromiseRejectionEvent;
     }
   }
-}
+};
