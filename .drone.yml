@@ -71,14 +71,16 @@ steps:
 
 - name: "Lint: Backend TypeScript"
   image: node:latest
-  depends_on: [ clone ]
+  # Currently depends on package installation for usage of npx
+  depends_on: [ clone, "Install: backend" ]
   commands:
     - cd backend/
-    - npx tslint -c tslint.json --project './'
+    - npx eslint .
 
 - name: "Lint: Frontend TypeScript"
   image: node:latest
-  depends_on: [ clone ]
+  # Currently depends on package installation for usage of npx
+  depends_on: [ clone, "Install: frontend" ]
   commands:
     - cd frontend/
     - npx tslint -c tslint.json --project './'
