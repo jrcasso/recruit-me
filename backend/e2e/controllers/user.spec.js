@@ -7,6 +7,7 @@ describe('API endpoint for user', function() {
   beforeAll(async function() {
     this.helper = new UserHelper();
     await this.helper.connect().then(() => {
+      this.helper.removeAll();
       // This host is docker compatible
       this.localRequest = request('http://express:3000');
       this.apiPath = '/api/v1';

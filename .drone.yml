@@ -85,20 +85,20 @@ steps:
     - cd frontend/
     - npx tslint -c tslint.json --project './'
 
-- name: "Unit Tests: backend"
-  image: node:latest
-  depends_on: ["express"]
-  commands:
-    - sleep 15
-    - cd backend/
-    - node_modules/.bin/jasmine
-
 - name: "Unit Tests: frontend"
   image: trion/ng-cli-karma:9.0.6
   depends_on: ["Install: frontend"]
   commands:
     - cd frontend/
     - ng test --progress false --watch false
+
+- name: "e2e Tests: backend"
+  image: node:latest
+  depends_on: ["express"]
+  commands:
+    - sleep 15
+    - cd backend/
+    - npx jasmine --config=jasmine.e2e.json
 
 - name: "e2e Tests: frontend"
   image: trion/ng-cli-e2e:9.0.6
