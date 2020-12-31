@@ -11,19 +11,31 @@ import { validationResult } from 'express-validator';
 export class MotdController {
   constructor() { }
 
-  public list(req: Request, res: Response): any {
-    Motd.find((err: Error, motds: IMotd[]) => {
-      if (err) {
-        return res.status(500).json({
-          message: 'Error when getting motd.',
-          error: err
+  public static list(req: Request, res: Response): Response<any> {
+    try {
+      Motd.find((err: Error, motds: IMotd[]) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error when getting motd.',
+            error: err
+          });
+        }
+        return res.json(motds);
+      }).catch((err) => {
+        console.error(err);
+        return res.status(404).json({
+          message: 'No such motd'
         });
-      }
-      return res.json(motds);
-    }).catch((err) => console.error(err));
+      });
+    } catch (err) {
+      return res.status(500).json({
+        message: 'Error when getting motd.',
+        error: err
+      });
+    }
   }
 
-  public show(req: Request, res: Response): any {
+  public static show(req: Request, res: Response): Response<any> {
     const id = req.params.id;
     if (Types.ObjectId.isValid(id)) {
       Motd.findOne({_id: id}, (err: Error, motd: IMotd) => {
@@ -47,7 +59,7 @@ export class MotdController {
     }
   }
 
-  public create(req: Request, res: Response): any {
+  public static create(req: Request, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -71,7 +83,7 @@ export class MotdController {
     });
   }
 
-  public update(req: Request, res: Response): any {
+  public static update(req: Request, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -116,7 +128,7 @@ export class MotdController {
     }
   }
 
-  public remove(req: Request, res: Response): any {
+  public static remove(req: Request, res: Response): Response<any> {
     const id = req.params.id;
     if (Types.ObjectId.isValid(id)) {
       Motd.findByIdAndRemove(id, (err: Error, motd: IMotd) => {
