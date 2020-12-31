@@ -12,7 +12,7 @@ import * as Bcrypt from 'bcrypt';
 export class UserController {
   constructor() {}
 
-  public list(req, res): void {
+  public static list(req, res): void {
     User.find((err, users) => {
       if (err) {
         return res.status(500).json({
@@ -24,7 +24,7 @@ export class UserController {
     }).catch((err) => console.error(err));
   }
 
-  public show(req, res): void {
+  public static show(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -45,7 +45,7 @@ export class UserController {
     }).catch((err) => console.error(err));
   }
 
-  public create(req, res): void {
+  public static create(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -83,7 +83,7 @@ export class UserController {
     });
   }
 
-  public update(req, res): void {
+  public static update(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -123,7 +123,7 @@ export class UserController {
     }).catch((err) => console.error(err));
   }
 
-  public remove(req, res): void {
+  public static remove(req, res): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
