@@ -1,7 +1,11 @@
 import { IMotd, Motd } from '../models/motd.model';
-import { Types } from 'mongoose';
+import { Types, Error } from 'mongoose';
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
+
+export interface MotdRequest extends Request {
+  body: IMotd;
+}
 
 /**
  * MotdController
@@ -11,7 +15,7 @@ import { validationResult } from 'express-validator';
 export class MotdController {
   constructor() { }
 
-  public static list(req: Request, res: Response): Response<any> {
+  public static list(req: MotdRequest, res: Response): Response<any> {
     try {
       Motd.find((err: Error, motds: IMotd[]) => {
         if (err) {
@@ -28,14 +32,14 @@ export class MotdController {
         });
       });
     } catch (err) {
+      console.error(err);
       return res.status(500).json({
         message: 'Error when getting motd.',
-        error: err
       });
     }
   }
 
-  public static show(req: Request, res: Response): Response<any> {
+  public static show(req: MotdRequest, res: Response): Response<any> {
     const id = req.params.id;
     if (Types.ObjectId.isValid(id)) {
       Motd.findOne({_id: id}, (err: Error, motd: IMotd) => {
@@ -59,7 +63,7 @@ export class MotdController {
     }
   }
 
-  public static create(req: Request, res: Response): Response<any> {
+  public static create(req: MotdRequest, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -72,7 +76,7 @@ export class MotdController {
       timestamp : req.body.timestamp
     });
 
-    motd.save((err, _motd) => {
+    motd.save((err) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when creating motd',
@@ -83,7 +87,7 @@ export class MotdController {
     });
   }
 
-  public static update(req: Request, res: Response): Response<any> {
+  public static update(req: MotdRequest, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -110,7 +114,7 @@ export class MotdController {
         motd.background = req.body.background ? req.body.background : motd.background;
         motd.timestamp = req.body.timestamp ? req.body.timestamp : motd.timestamp;
 
-        motd.save((_err, _motd) => {
+        motd.save((_err) => {
           if (_err) {
             return res.status(500).json({
               message: 'Error when updating motd.',
@@ -128,10 +132,10 @@ export class MotdController {
     }
   }
 
-  public static remove(req: Request, res: Response): Response<any> {
+  public static remove(req: MotdRequest, res: Response): Response<any> {
     const id = req.params.id;
     if (Types.ObjectId.isValid(id)) {
-      Motd.findByIdAndRemove(id, (err: Error, motd: IMotd) => {
+      Motd.findByIdAndRemove(id, (err: Error) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when deleting the motd.',
