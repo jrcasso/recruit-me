@@ -8,6 +8,10 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking'
   ],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'e2e/**/*.js'
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.lint.json',
