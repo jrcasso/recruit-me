@@ -40,9 +40,8 @@ export class MotdController {
   }
 
   public static show(req: MotdRequest, res: Response): Response<any> {
-    const id = req.params.id;
-    if (Types.ObjectId.isValid(id)) {
-      Motd.findOne({_id: id}, (err: Error, motd: IMotd) => {
+    if (Types.ObjectId.isValid(req.params.id)) {
+      Motd.findOne({_id: req.params.id}, (err: Error, motd: IMotd) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when getting motd.',

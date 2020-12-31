@@ -1,9 +1,13 @@
-import { User } from '../models/user.model';
-const mongoose = require( 'mongoose' );
-const { validationResult } = require('express-validator');
+import { IUser, User } from '../models/user.model';
+import { Types, Error } from 'mongoose';
+import { Request, Response } from 'express';
+import { validationResult } from 'express-validator';
 
-import * as Bcrypt from 'bcrypt';
+import { genSalt, hash } from 'bcrypt';
 
+export interface UserRequest extends Request {
+  body: IUser;
+}
 /**
  * userController.js
  *
@@ -12,46 +16,68 @@ import * as Bcrypt from 'bcrypt';
 export class UserController {
   constructor() {}
 
-  public static list(req, res): void {
-    User.find((err, users) => {
-      if (err) {
-        return res.status(500).json({
-          message: 'Error when getting users.',
-          error: err
+  public static list(req: Request, res: Response): Response<any> {
+    try {
+      User.find((err: Error, users: IUser[]) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error when getting users.',
+            error: err
+          });
+        }
+        return res.json(users);
+      }).catch((err) => {
+        console.error(err);
+        return res.status(404).json({
+          message: 'No users'
         });
-      }
-      return res.json(users);
-    }).catch((err) => console.error(err));
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        message: 'Error when getting users.',
+      });
+    }
   }
 
-  public static show(req, res): void {
+  public static show(req: Request, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    User.findOne({_id: req.params.id}, (err, user) => {
-      if (err) {
-        return res.status(500).json({
-          message: 'Error when getting user.',
-          error: err
-        });
-      }
-      if (!user) {
-        return res.status(404).json({
-          message: 'No such user'
-        });
-      }
-      return res.json(user);
-    }).catch((err) => console.error(err));
+
+    if (Types.ObjectId.isValid(req.params.id)) {
+      User.findOne({_id: req.params.id}, (err: Error, user: IUser) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error when getting user.',
+            error: err
+          });
+        }
+        if (!user) {
+          return res.status(404).json({
+            message: 'No such user'
+          });
+        }
+        return res.json(user);
+      }).catch((err) => console.error(err));
+    } else {
+      return res.status(400).json({
+        message: 'Bad Request: malformed ObjectId'
+      });
+    }
   }
 
-  public static create(req, res): void {
+  public static create(req: UserRequest, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    Bcrypt.genSalt(10, (err, salt) => {
-      Bcrypt.hash(req.body.password, salt, (er, hash) => {
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    genSalt(10, (err: Error, salt: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      hash(req.body.password, salt, (er: Error, passwordHash: string) => {
         if (er) {
           return res.status(500).json({
             message: 'Error when creating user',
@@ -65,11 +91,11 @@ export class UserController {
           lastname : req.body.lastname,
           email : req.body.email,
           created : req.body.created,
-          password : hash,
+          password : passwordHash,
           active : true,
           verified : false
         });
-        new_user.save((e, u) => {
+        new_user.save((e: Error, u: IUser) => {
           if (e) {
             return res.status(500).json({
               message: 'Error when creating user',
@@ -83,12 +109,12 @@ export class UserController {
     });
   }
 
-  public static update(req, res): void {
+  public static update(req: UserRequest, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    User.findOne({_id: req.params.id}, (err, user) => {
+    User.findOne({_id: req.params.id}, (err: Error, user: IUser) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when updating user',
@@ -123,12 +149,12 @@ export class UserController {
     }).catch((err) => console.error(err));
   }
 
-  public static remove(req, res): void {
+  public static remove(req: Request, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    User.findByIdAndRemove(req.params.id, (err, user) => {
+    User.findByIdAndRemove(req.params.id, (err: Error) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when removing user.',
