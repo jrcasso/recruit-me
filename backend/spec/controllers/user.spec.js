@@ -90,6 +90,7 @@ describe('API endpoint for user', function() {
           expect(res.body.email).toBe(this.email);
           expect(res.body.firstname).toBe(this.firstname);
           expect(res.body.lastname).toBe(this.lastname);
+          expect(res.body.password).toBe(null);
           expect(res.body.active).toBe(true);
           expect(res.body.verified).toBe(false);
         })
@@ -240,6 +241,23 @@ describe('API endpoint for user', function() {
         .expect((res) => {
           expect(res.body.firstname).toBe('Jane');
           expect(res.body.lastname).toBe('Smith');
+        })
+        .expect(200, done);
+    });
+
+    it('returns 200 for valid ObjectIds', async function(done) {
+      // Create user in the database
+      const user = await this.helper.create(this.user);
+
+      // Update the user and expect new attributes
+      const newUser = { ...this.user, ...{ password: 'foobarbaz1213' } };
+      this.localRequest
+        .put(`${this.apiPath}/user/${user.insertedId}`)
+        .send(newUser)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          expect(res.body.password).toBe(null);
         })
         .expect(200, done);
     });

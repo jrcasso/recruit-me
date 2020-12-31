@@ -2,6 +2,8 @@ import { User } from '../models/user.model';
 const mongoose = require( 'mongoose' );
 const { validationResult } = require('express-validator');
 
+import * as Bcrypt from 'bcrypt';
+
 /**
  * userController.js
  *
@@ -48,46 +50,36 @@ export class UserController {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    const new_user = new User({
-      firstname : req.body.firstname,
-      lastname : req.body.lastname,
-      email : req.body.email,
-      created : req.body.created,
-      password : req.body.password,
-      active : true,
-      verified : false
-    });
+    Bcrypt.genSalt(10, (err, salt) => {
+      Bcrypt.hash(req.body.password, salt, (er, hash) => {
+        if (er) {
+          return res.status(500).json({
+            message: 'Error when creating user',
+            error: er
+          });
+        }
 
-    // Determine if this user email has already been registered
-    // If so, return bad request. Else, create the user.
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    User.findOne({$or: [
-      {email: new_user.email}
-    ]}).exec((err, user) => {
-      if (!user) {
+        // Store hash in your password DB.
+        const new_user = new User({
+          firstname : req.body.firstname,
+          lastname : req.body.lastname,
+          email : req.body.email,
+          created : req.body.created,
+          password : hash,
+          active : true,
+          verified : false
+        });
         new_user.save((e, u) => {
           if (e) {
             return res.status(500).json({
               message: 'Error when creating user',
               error: e
             });
-          } else {
           }
+          u.password = null;
           return res.status(201).json(u);
         });
-      } else {
-        return res.status(400).json({
-          // #SEC This is a decision made to expose whether or not
-          // an existing user already exists.
-          message: 'User already exists.',
-        });
-      }
-      if (err) {
-        return res.status(500).json({
-          message: 'Error when creating user',
-          error: err
-        });
-      }
+      });
     });
   }
 
@@ -123,7 +115,9 @@ export class UserController {
             error: e
           });
         }
-
+        if (u.password != null) {
+          u.password = null;
+        }
         return res.json(u);
       });
     }).catch((err) => console.error(err));
