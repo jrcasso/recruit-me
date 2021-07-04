@@ -5,12 +5,11 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 
 import { compare } from 'bcrypt';
+import { SignJWT } from 'jose/jwt/sign';
 
 export interface AuthRequest extends Request {
-  params: {
-    email: string;
-    password: string;
-  }
+  email: string;
+  password: string;
 }
 /**
  * userController.js
@@ -25,8 +24,7 @@ export class AuthController {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-
-    User.findOne({email: req.params.email}, (err: Error, user: IUser) => {
+    User.findOne({email: req.body.email}, 'password', null, (err: Error, user: IUser) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when authorizing',
@@ -35,18 +33,35 @@ export class AuthController {
       }
       if (!user) {
         return res.status(404).json({
-          message: 'No user with that email'
+          // Generic error message to avoid user enumeration
+          // In this case, a user was not found with that email
+          message: 'Invalid credentials'
         });
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      compare(user.password, user.password, function(err, result) {
-        // Store hash in your password DB.
+      compare(req.body.password, user.password, async function(err, result) {
         if (!result) {
-          return res.status(401)
+          // Generic error message to avoid password enumeration
+          // In this case, the passwords did not match
+          return res.status(401).json({
+            message: 'Invalid credentials'
+          });
         }
+
+        // const jwt = await new SignJWT({ 'urn:example:claim': true })
+        //   .setProtectedHeader({ alg: 'ES256' })
+        //   .setIssuedAt()
+        //   .setIssuer('urn:example:issuer')
+        //   .setAudience('urn:example:audience')
+        //   .setExpirationTime('2h')
+        //   .sign(process.env.PRIVATE_KEY)
+
+        // console.log(jwt)
+
         const token = new Auth({
           user_id: user._id,
+          // token: jwt,
           token: 'foo',
           expiry: Date()
         });
@@ -69,7 +84,7 @@ export class AuthController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    Auth.findByIdAndRemove(req.params.id, (err: Error) => {
+    Auth.findByIdAndRemove(req.params.id, null, (err: Error) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when removing auth.',

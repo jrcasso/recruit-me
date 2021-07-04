@@ -126,25 +126,29 @@ export class UserController {
           message: 'No such user'
         });
       }
-
-      user.firstname = req.body.firstname ? req.body.firstname : user.firstname;
-      user.lastname = req.body.lastname ? req.body.lastname : user.lastname;
-      user.email = req.body.email ? req.body.email : user.email;
-      user.created = req.body.created ? req.body.created : user.created;
-      user.password = req.body.password ? req.body.password : user.password;
-      user.active = req.body.active ? req.body.active : user.active;
-      user.verified = req.body.verified ? req.body.verified : user.verified;
-      user.save((e, u) => {
-        if (e) {
-          return res.status(500).json({
-            message: 'Error when updating user.',
-            error: e
+      genSalt(10, (err: Error, salt: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        hash(req.body.password, salt, (er: Error, passwordHash: string) => {
+          user.firstname = req.body.firstname ? req.body.firstname : user.firstname;
+          user.lastname = req.body.lastname ? req.body.lastname : user.lastname;
+          user.email = req.body.email ? req.body.email : user.email;
+          user.created = req.body.created ? req.body.created : user.created;
+          user.password = passwordHash;
+          user.active = req.body.active ? req.body.active : user.active;
+          user.verified = req.body.verified ? req.body.verified : user.verified;
+          user.save((e, u) => {
+            if (e) {
+              return res.status(500).json({
+                message: 'Error when updating user.',
+                error: e
+              });
+            }
+            if (u.password != null) {
+              u.password = null;
+            }
+            return res.json(u);
           });
-        }
-        if (u.password != null) {
-          u.password = null;
-        }
-        return res.json(u);
+        });
       });
     }).catch((err) => console.error(err));
   }
