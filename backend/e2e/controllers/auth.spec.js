@@ -138,14 +138,14 @@ describe('API endpoint for auth', function() {
     });
 
     it('deletes for a valid ObjectId', async function(done) {
-      const auth = await this.helper.create(this.authRequest);
+      const auth = await this.authHelper.create(this.authRequest);
 
       this.localRequest
         .delete(`${this.apiPath}/auth/${auth.insertedId}`)
         .set('Accept', 'application/json')
         .expect(204, done);
 
-      const deletedUser = await this.helper.retrieve(this.authRequest.insertedId);
+      const deletedUser = await this.authHelper.retrieve(this.authRequest.insertedId);
       expect(deletedUser).toBe(null);
     });
   });
