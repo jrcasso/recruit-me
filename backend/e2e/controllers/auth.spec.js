@@ -41,7 +41,7 @@ describe('API endpoint for auth', function() {
   });
 
   describe('with POST /auth/', function() {
-    it('creates a valid auth', async function(done) {
+    it('creates a valid token', async function(done) {
       await this.userHelper.create({ ...this.user, ...{ active : true, verified : true } });
       this.localRequest
         .post(`${this.apiPath}/auth`)
@@ -121,7 +121,7 @@ describe('API endpoint for auth', function() {
         });
     });
 
-    it('refuses to create a auth with an empty email', function(done) {
+    it('refuses to create a token with an empty email', function(done) {
       // Copy and override a valid payload with an invalid email
       const invalidEmails = [null, 0, '', false];
       invalidEmails.forEach(email => {
@@ -138,7 +138,7 @@ describe('API endpoint for auth', function() {
       });
     });
 
-    it('refuses to create a auth with an invalid email', function(done) {
+    it('refuses to create a token with an invalid email', function(done) {
       const randomString = RandomHelper.randomString(5, 10);
       const invalidUser = { ...this.authRequest, ...{ email: randomString } };
 
@@ -153,7 +153,22 @@ describe('API endpoint for auth', function() {
         }]}, done);
     });
 
-    it('refuses to create a auth with an empty password', function(done) {
+    it('refuses to create a token with a non-existent email', function(done) {
+      const invalidUser = { ...this.authRequest, ...{ email: 'nonexistent@gmail.com' } };
+
+      this.localRequest
+        .post(`${this.apiPath}/auth`)
+        .send(invalidUser)
+        .expect(422, { errors: [{
+          value: 'nonexistent@gmail.com',
+          msg: 'Invalid credentials',
+          param: 'email',
+          location: 'body'
+        }]}, done);
+    });
+
+    it('refuses to create a token with an empty password', async function(done) {
+      await this.userHelper.create({ ...this.user, ...{ active : true, verified : true } });
       const invalidPasswords = [ null, 0, '', false ];
 
       invalidPasswords.forEach(password => {
