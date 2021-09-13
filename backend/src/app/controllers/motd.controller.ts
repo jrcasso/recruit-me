@@ -8,12 +8,12 @@ export interface MotdRequest extends Request {
 }
 
 /**
- * MotdController
+ * motd.controller.ts
  *
  * @description :: Server-side logic for managing motds.
  */
 export class MotdController {
-  constructor() { }
+  constructor() {}
 
   public static list(req: MotdRequest, res: Response): Response<any> {
     try {

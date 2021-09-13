@@ -9,7 +9,7 @@ export interface UserRequest extends Request {
   body: IUser;
 }
 /**
- * userController.js
+ * user.controller.ts
  *
  * @description :: Server-side logic for managing users.
  */
@@ -126,14 +126,25 @@ export class UserController {
           message: 'No such user'
         });
       }
-      genSalt(10, (err: Error, salt: string) => {
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      genSalt(10, (genErr: Error, salt: string): Response<any> => {
+        if (genErr) {
+          return res.status(500).json({
+            message: 'Error when updating user',
+            error: genErr
+          });
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        hash(req.body.password, salt, (er: Error, passwordHash: string) => {
+        hash(req.body.password, salt, (er: Error, passwordHash: string): void => {
+          if (req.body.password != null) {
+            user.password = passwordHash;
+          }
           user.firstname = req.body.firstname ? req.body.firstname : user.firstname;
           user.lastname = req.body.lastname ? req.body.lastname : user.lastname;
           user.email = req.body.email ? req.body.email : user.email;
           user.created = req.body.created ? req.body.created : user.created;
-          user.password = passwordHash;
           user.active = req.body.active ? req.body.active : user.active;
           user.verified = req.body.verified ? req.body.verified : user.verified;
           user.save((e, u) => {

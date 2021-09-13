@@ -1,4 +1,4 @@
-import { model, Model, Schema, Document } from 'mongoose';
+import { model, Model, Schema, Document, Types } from 'mongoose';
 
 
 // Schema
@@ -10,6 +10,7 @@ const MotdSchema: Schema = new Schema({
 });
 
 export interface IMotd extends Document {
+  _id?: Types.ObjectId;
   message: string;
   foreground?: string;
   background?: string;

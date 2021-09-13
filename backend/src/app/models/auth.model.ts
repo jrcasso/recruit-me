@@ -1,4 +1,4 @@
-import { model, Model, Schema, Document } from 'mongoose';
+import { model, Model, Schema, Document, Types } from 'mongoose';
 
 
 const AuthSchema: Schema = new Schema({
@@ -9,6 +9,7 @@ const AuthSchema: Schema = new Schema({
 });
 
 export interface IAuth extends Document {
+  _id?: Types.ObjectId;
   user_id: string;
   token: string;
   created: Date;

@@ -271,6 +271,12 @@ module.exports = {
           ]
         }
       }
+    ],
+    "@typescript-eslint/unbound-method": [
+      "error",
+      {
+        "ignoreStatic": true
+      }
     ]
   }
 };

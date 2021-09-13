@@ -11,26 +11,25 @@ import { createPrivateKey } from 'crypto';
 
 
 export interface AuthRequest extends Request {
-  email: string;
-  password: string;
+  body: IUser;
 }
 /**
- * userController.js
+ * auth.controller.ts
  *
- * @description :: Server-side logic for managing users.
+ * @description :: Server-side logic for managing authentication.
  */
 export class AuthController {
   constructor() {}
 
   public static create(req: AuthRequest, res: Response): Response<any> {
     // Expiry in is hours
-    const TOKEN_EXPIRY = 4
+    const TOKEN_EXPIRY = 4;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    User.findOne({email: req.body.email}, ['active', 'password', 'verified'], null, (err: Error, user: IUser) => {
+    User.findOne({email: req.body.email}, ['active', 'password', 'verified'], {}, (err: Error, user: IUser): Response<any> => {
       if (err) {
         return res.status(500).json({
           message: 'Error while authenticating',
@@ -47,7 +46,14 @@ export class AuthController {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      compare(req.body.password, user.password, async function(err, result) {
+      compare(req.body.password, user.password, async (passwordErr: Error, result: boolean): Promise<Response<any>> => {
+        if (passwordErr) {
+          return res.status(500).json({
+            message: 'Error while authenticating',
+            error: passwordErr
+          });
+        }
+
         // After this block, less generic response messages are allowed
         if (!result) {
           // Generic error message to avoid password enumeration
@@ -78,17 +84,17 @@ export class AuthController {
           .setIssuer('urn:justinshipscode:mean-demo')
           .setAudience('urn:justinshipscode:users')
           .setExpirationTime(`${TOKEN_EXPIRY}h`)
-          .sign(createPrivateKey(readFileSync(`${process.env.CONFIG_PATH}/private.pem`).toString()))
+          .sign(createPrivateKey(readFileSync(`${process.env.CONFIG_PATH}/private.pem`).toString()));
 
-        let created = new Date()
-        let expiry = new Date()
-        expiry.setHours(expiry.getHours() + TOKEN_EXPIRY)
+        const created = new Date();
+        const expiry = new Date();
+        expiry.setHours(expiry.getHours() + TOKEN_EXPIRY);
 
         const token = new Auth({
           user_id: user._id,
           token: jwt,
-          created: created,
-          expiry: expiry
+          created,
+          expiry
         });
 
         token.save((e: Error, u: IAuth) => {
@@ -101,7 +107,7 @@ export class AuthController {
           return res.status(201).json(u);
         });
       });
-      return res.status(401)
+      return res.status(401);
     }).catch((err) => console.error(err));
   }
 
@@ -110,7 +116,7 @@ export class AuthController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    Auth.findByIdAndRemove(req.params.id, null, (err: Error) => {
+    Auth.findByIdAndRemove(req.params.id, (err: Error): Response<any> => {
       if (err) {
         return res.status(500).json({
           message: 'Error while removing authorization',
