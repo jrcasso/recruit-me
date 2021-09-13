@@ -46,6 +46,8 @@ steps:
 - name: express
   image: node:latest
   detach: true
+  environment:
+    CONFIG_PATH: /drone/src/backend/config
   depends_on: ["Install: backend"]
   commands:
     - cd backend/
