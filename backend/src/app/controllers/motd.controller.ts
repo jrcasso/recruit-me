@@ -1,32 +1,47 @@
 import { IMotd, Motd } from '../models/motd.model';
-import { Types } from 'mongoose';
+import { Types, Error } from 'mongoose';
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 
+export interface MotdRequest extends Request {
+  body: IMotd;
+}
+
 /**
- * MotdController
+ * motd.controller.ts
  *
  * @description :: Server-side logic for managing motds.
  */
 export class MotdController {
-  constructor() { }
+  constructor() {}
 
-  public list(req: Request, res: Response): any {
-    Motd.find((err: Error, motds: IMotd[]) => {
-      if (err) {
-        return res.status(500).json({
-          message: 'Error when getting motd.',
-          error: err
+  public static list(req: MotdRequest, res: Response): Response<any> {
+    try {
+      Motd.find((err: Error, motds: IMotd[]) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error when getting motd.',
+            error: err
+          });
+        }
+        return res.json(motds);
+      }).catch((err) => {
+        console.error(err);
+        return res.status(404).json({
+          message: 'No such motd'
         });
-      }
-      return res.json(motds);
-    }).catch((err) => console.error(err));
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        message: 'Error when getting motd.',
+      });
+    }
   }
 
-  public show(req: Request, res: Response): any {
-    const id = req.params.id;
-    if (Types.ObjectId.isValid(id)) {
-      Motd.findOne({_id: id}, (err: Error, motd: IMotd) => {
+  public static show(req: MotdRequest, res: Response): Response<any> {
+    if (Types.ObjectId.isValid(req.params.id)) {
+      Motd.findOne({_id: req.params.id}, (err: Error, motd: IMotd) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when getting motd.',
@@ -47,7 +62,7 @@ export class MotdController {
     }
   }
 
-  public create(req: Request, res: Response): any {
+  public static create(req: MotdRequest, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -60,7 +75,7 @@ export class MotdController {
       timestamp : req.body.timestamp
     });
 
-    motd.save((err, _motd) => {
+    motd.save((err) => {
       if (err) {
         return res.status(500).json({
           message: 'Error when creating motd',
@@ -71,7 +86,7 @@ export class MotdController {
     });
   }
 
-  public update(req: Request, res: Response): any {
+  public static update(req: MotdRequest, res: Response): Response<any> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -98,7 +113,7 @@ export class MotdController {
         motd.background = req.body.background ? req.body.background : motd.background;
         motd.timestamp = req.body.timestamp ? req.body.timestamp : motd.timestamp;
 
-        motd.save((_err, _motd) => {
+        motd.save((_err) => {
           if (_err) {
             return res.status(500).json({
               message: 'Error when updating motd.',
@@ -116,10 +131,10 @@ export class MotdController {
     }
   }
 
-  public remove(req: Request, res: Response): any {
+  public static remove(req: MotdRequest, res: Response): Response<any> {
     const id = req.params.id;
     if (Types.ObjectId.isValid(id)) {
-      Motd.findByIdAndRemove(id, (err: Error, motd: IMotd) => {
+      Motd.findByIdAndRemove(id, (err: Error) => {
         if (err) {
           return res.status(500).json({
             message: 'Error when deleting the motd.',

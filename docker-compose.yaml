@@ -15,7 +15,7 @@ services:
     build:
       context: ./frontend
     environment:
-      - ENV:dev
+      - ENV=dev
     ports:
       - "4200:4200"
     volumes:
@@ -28,6 +28,9 @@ services:
   express:
     build:
       context: ./backend
+    environment:
+      - CONFIG_PATH=/backend/config
+      - ENV=dev
     ports:
       - "3000:3000"
       - "9876:9876"

@@ -1,22 +1,25 @@
-.grid-container {
+.grid-container-login {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     gap: 0px 0px;
     grid-template-areas:
-        "banner form"
-        "banner form"
-        "banner form";
-  }
-
-.banner {
-    grid-area: banner;
+      "banner form-input form-input"
+      "banner form-input form-input"
+      "banner form-input form-input"
+      "banner form-button form-button"
+      "banner form-button form-button";
 }
-
-.form {
-    grid-area: form;
+.banner { grid-area: banner; }
+.form-input {
+    grid-area: form-input;
     display: flex;
     justify-content: center;
-    align-items: center;
+    flex-direction: column;
 }
-
+.form-button {
+    grid-area: form-button;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}

@@ -1,24 +1,24 @@
-<div class="grid-container">
+<div class="grid-container-login">
   <div class="banner">
     <!-- TODO: Make this configurable via API, so that it can be rotated for marketing purposes -->
     <img src="https://dummyimage.com/230x400/683ab7/ffffff.jpg&text=LOGIN">
   </div>
-  <div class="form">
+  <div class="form-input">
     <mat-card-content>
-      <div class="content">
-        <form [formGroup]="loginForm">
-          <mat-form-field>
-            <mat-label> Email </mat-label>
-            <input matInput type="text" formControlName="email">
-          </mat-form-field><br>
-          <mat-form-field>
-            <mat-label> Password </mat-label>
-            <input matInput type="text" formControlName="password">
-          </mat-form-field><br>
-        </form>
-      </div>
-    </mat-card-content><br>
-    <mat-card-actions class="center"><br><br><br><br><br><br><br><br><br><br>
+      <form [formGroup]="loginForm">
+        <mat-form-field>
+          <mat-label> Email </mat-label>
+          <input matInput type="text" formControlName="email">
+        </mat-form-field><br>
+        <mat-form-field>
+          <mat-label> Password </mat-label>
+          <input matInput type="text" formControlName="password">
+        </mat-form-field><br>
+      </form>
+    </mat-card-content>
+  </div>
+  <div class="form-button">
+    <mat-card-actions class="center">
       <button mat-raised-button color="accent" matTooltip="Login!">Login</button>
     </mat-card-actions>
   </div>

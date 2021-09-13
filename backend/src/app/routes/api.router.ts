@@ -1,4 +1,5 @@
-import * as Express from 'express';
+import { Router } from 'express';
+import { AuthRouter } from './auth.router';
 import { MotdRouter } from './motd.router';
 import { UserRouter } from './user.router';
 /**
@@ -7,12 +8,14 @@ import { UserRouter } from './user.router';
  * @description :: Server-side logic for managing motds.
  */
 export class ApiRouter {
-  public router: any;
+  public router: Router;
 
   constructor() {
+    const authRouter = new AuthRouter();
     const motdRouter = new MotdRouter();
     const userRouter = new UserRouter();
-    this.router = Express.Router();
+    this.router = Router();
+    this.router.use('/auth', authRouter.router);
     this.router.use('/motd', motdRouter.router);
     this.router.use('/user', userRouter.router);
   }

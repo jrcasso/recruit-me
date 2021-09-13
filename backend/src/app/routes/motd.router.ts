@@ -1,28 +1,26 @@
 import { MotdController } from '../controllers/motd.controller';
-import * as Express from 'express';
-const { check } = require('express-validator');
+import { Router } from 'express';
+import { check } from 'express-validator';
 
 export class MotdRouter {
-  public router: any;
-  public motdController: any;
+  public router: Router;
 
   constructor() {
-    this.motdController = new MotdController();
-    this.router = Express.Router();
-    this.router.get('/', this.motdController.list);
-    this.router.get('/:id', this.motdController.show);
+    this.router = Router();
+    this.router.get('/', (req, res) => MotdController.list(req, res));
+    this.router.get('/:id', (req, res) => MotdController.show(req, res));
     this.router.post('/', [
       check('message', 'Message cannot be empty').not().isEmpty(),
       check('message', 'Message cannot exceed 80 characters').isLength({ max: 80 }),
     ],
-    this.motdController.create
+    (req, res) => MotdController.create(req, res)
     );
     this.router.put('/:id', [
       check('message', 'Message cannot exceed 80 characters').isLength({ max: 80 }),
     ],
-    this.motdController.update
+    (req, res) => MotdController.update(req, res)
     );
-    this.router.delete('/:id', this.motdController.remove);
+    this.router.delete('/:id', (req, res) => MotdController.remove(req, res));
   }
 
 }
