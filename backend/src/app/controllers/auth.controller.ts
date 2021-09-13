@@ -6,6 +6,9 @@ import { validationResult } from 'express-validator';
 
 import { compare } from 'bcrypt';
 import { SignJWT } from 'jose/jwt/sign';
+import { readFileSync } from 'fs';
+import { createPrivateKey } from 'crypto';
+
 
 export interface AuthRequest extends Request {
   email: string;
@@ -20,17 +23,21 @@ export class AuthController {
   constructor() {}
 
   public static create(req: AuthRequest, res: Response): Response<any> {
+    // Expiry in is hours
+    const TOKEN_EXPIRY = 4
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    User.findOne({email: req.body.email}, 'password', null, (err: Error, user: IUser) => {
+    User.findOne({email: req.body.email}, ['active', 'password', 'verified'], null, (err: Error, user: IUser) => {
       if (err) {
         return res.status(500).json({
-          message: 'Error when authorizing',
+          message: 'Error while authenticating',
           error: err
         });
       }
+
       if (!user) {
         return res.status(404).json({
           // Generic error message to avoid user enumeration
@@ -41,6 +48,7 @@ export class AuthController {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       compare(req.body.password, user.password, async function(err, result) {
+        // After this block, less generic response messages are allowed
         if (!result) {
           // Generic error message to avoid password enumeration
           // In this case, the passwords did not match
@@ -48,27 +56,45 @@ export class AuthController {
             message: 'Invalid credentials'
           });
         }
+        if (!user.verified) {
+          return res.status(401).json({
+            message: 'User has not been verified'
+          });
+        }
+        if (!user.active) {
+          return res.status(401).json({
+            message: 'User is inactive'
+          });
+        }
+        // EC PEM keys can be generated as such:
+        // openssl ecparam -name prime256v1 -genkey -noout -out private.pem
+        // openssl ec -in private.pem -pubout -out public.pem
+        const jwt = await new SignJWT(
+          {
+            'urn:justinshipscode:claim': true
+          })
+          .setProtectedHeader({ alg: 'ES256' })
+          .setIssuedAt()
+          .setIssuer('urn:justinshipscode:mean-demo')
+          .setAudience('urn:justinshipscode:users')
+          .setExpirationTime(`${TOKEN_EXPIRY}h`)
+          .sign(createPrivateKey(readFileSync(`${process.env.CONFIG_PATH}/private.pem`).toString()))
 
-        // const jwt = await new SignJWT({ 'urn:example:claim': true })
-        //   .setProtectedHeader({ alg: 'ES256' })
-        //   .setIssuedAt()
-        //   .setIssuer('urn:example:issuer')
-        //   .setAudience('urn:example:audience')
-        //   .setExpirationTime('2h')
-        //   .sign(process.env.PRIVATE_KEY)
-
-        // console.log(jwt)
+        let created = new Date()
+        let expiry = new Date()
+        expiry.setHours(expiry.getHours() + TOKEN_EXPIRY)
 
         const token = new Auth({
           user_id: user._id,
-          // token: jwt,
-          token: 'foo',
-          expiry: Date()
+          token: jwt,
+          created: created,
+          expiry: expiry
         });
+
         token.save((e: Error, u: IAuth) => {
           if (e) {
             return res.status(500).json({
-              message: 'Error when creating auth',
+              message: 'Error while creating authorization',
               error: e
             });
           }
@@ -87,7 +113,7 @@ export class AuthController {
     Auth.findByIdAndRemove(req.params.id, null, (err: Error) => {
       if (err) {
         return res.status(500).json({
-          message: 'Error when removing auth.',
+          message: 'Error while removing authorization',
           error: err
         });
       }
