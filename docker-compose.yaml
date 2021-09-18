@@ -39,7 +39,6 @@ services:
       - ./backend:/backend
     command: "node_modules/.bin/nodemon -L src/app/app.ts"
     depends_on:
-      - mongo-express
       - mongo
 
   mongo:
