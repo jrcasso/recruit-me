@@ -1,4 +1,4 @@
-import { model, Model, Schema, Document, Types } from 'mongoose';
+import { model, Model, Schema, Document } from 'mongoose';
 
 
 const UserSchema: Schema = new Schema({
@@ -12,16 +12,17 @@ const UserSchema: Schema = new Schema({
   verified: { type: Boolean, default: false },
 });
 
-export interface IUser extends Document {
-  _id?: Types.ObjectId;
+export interface UserBase {
   email: string;
-  password: string;
-  roles: string[];
+  password?: string;
+  roles?: string[];
   firstname: string;
   lastname: string;
-  created: Date;
-  active: boolean;
-  verified: boolean;
+  created?: Date;
+  active?: boolean;
+  verified?: boolean;
 }
+
+export interface IUser extends Document, UserBase {}
 
 export const User: Model<IUser> = model('User', UserSchema);
