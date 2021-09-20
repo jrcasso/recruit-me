@@ -4,7 +4,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from '@modules/material.module';
+
+import { ApiService } from '@services/api.service';
 
 import { WelcomeComponent } from '@components/welcome/welcome.component';
 import { HomeComponent } from '@components/home/home.component';
@@ -46,10 +49,13 @@ const routes: Routes = [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    HttpClientModule,
     ReactiveFormsModule,
     MaterialModule,
   ],
-  providers: [],
+  providers: [
+    ApiService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
